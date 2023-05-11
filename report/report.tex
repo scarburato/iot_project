@@ -1,0 +1,73 @@
+% !TeX spellcheck = en_US
+\documentclass[parskip=full]{report}
+
+\usepackage{amsmath}
+\usepackage{listings}
+%\usepackage{beramono}
+\usepackage{float}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage[a4paper, margin={3cm}]{geometry}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{svg}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{pdfpages}
+
+
+\usepackage{hyphenat}
+\usepackage[english]{babel}
+% Carattere monospaziato di default
+\renewcommand{\ttdefault}{pcr}
+
+\lstset{
+	% wrap long lines on new line
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	breaklines=true, 
+	columns=fullflexible,
+	% tab and fonts
+	tabsize=2,
+	basicstyle=\ttfamily\small,
+	% theme
+	numbers=left,
+	rulecolor=\color{black!30},	
+	% UTF8 and escape
+	escapeinside={\%TEX}{\^^M},
+	inputencoding=utf8,
+	extendedchars=true,
+	literate={á}{{\'a}}1 {à}{{\`a}}1 {é}{{\'e}}1 {è}{{\`e}}1,
+}
+
+
+% Title Page
+\title{
+	\includegraphics[width=0.333\textwidth]{assets/unipi1.png} \\
+	\vspace{4cm}
+	rel
+}
+
+\author{
+	\begin{tabular}{lr}
+		Dario Pagani & 585281 \\
+		Ricky Marinsalda & 585094
+	\end{tabular}
+}
+
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+
+%\include{chapters/intro.tex}
+%\include{chapters/feasibility.tex}
+%\include{chapters/design.tex}
+%\include{chapters/implementation.tex}
+%\include{chapters/conlusions.tex}
+
+%\appendix
+%\include{chapters/manual.tex}
+
+\end{document}          

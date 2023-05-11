@@ -1,0 +1,13 @@
+.idea/
+*.osm
+ways.csv
+nodes.csv
+
+*.ser
+*.class
+*.aux
+report.pdf
+*.log
+*.out
+*.synctex.gz
+*.toc
