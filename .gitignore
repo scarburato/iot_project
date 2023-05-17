@@ -11,3 +11,7 @@ report.pdf
 *.out
 *.synctex.gz
 *.toc
+
+*.o
+build/
+
