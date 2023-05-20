@@ -62,9 +62,9 @@ public class Logger {
         log("AIR QUALITY", message);
     }
 
-    public void logPresence (String message)
+    public void logFloatSensor (String message)
     {
-        log("PRESENCE", message);
+        log("FLOAT LEVEL SENSOR", message);
     }
 
     public void logInfo (String message)

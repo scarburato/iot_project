@@ -15,18 +15,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class FloatSensor {
     private CoapClient clientPresenceSensor;
     private CoapObserveRelation observePresence;
-
+    private boolean floatLevelsensor;
     private Gson parser;
     private Logger logger;
     private boolean lowLevel = false;
 
     FloatSensor(){
+        floatLevelsensor = true;
         ConfigurationParameters configurationParameters = ConfigurationParameters.getInstance();
         parser = new Gson();
         logger = Logger.getInstance();
     }
-    public void registerFloatSensor(String ip) {
-        System.out.print("\n[REGISTRATION] The presence sensor [" + ip + "] is now registered\n>");
+    public void registerFloatLevelSensor(String ip) {
+        System.out.print("\n[REGISTRATION] The float level sensor [" + ip + "] is now registered\n>");
         clientPresenceSensor = new CoapClient("coap://[" + ip + "]/float/level");
 
         observePresence = clientPresenceSensor.observe(new CoapHandler() {
@@ -37,36 +38,19 @@ public class FloatSensor {
                     FloatLevelSample floatSample = parser.fromJson(responseString, FloatLevelSample.class);
                     // TODO
                     //DBDriver.getInstance().insertFloatLevelSample(floatSample);
-                    FloatLevelSample.set(floatSample.getLowLevel());
+                    floatLevelsensor = floatSample.getLowLevel();
                 } catch(Exception e) {
-                    System.out.print("\n[ERROR] The presence sensor gave non-significant data\n>");
+                    System.out.print("\n[ERROR] The float level sensor gave non-significant data\n>");
                 }
 
-                if(numberOfPeople.get() > 0 && !lightOn) {
-                    if(light != null) {
-                        logger.logPresence("There are people in the sauna, the light is switched ON");
-                        light.lightSwitch(true);
-                        lightOn = true;
-                    }
+                if(floatLevelsensor) {
+                    logger.logFloatSensor("There is water, so there is no need to refill");
+
+                }else{
+                    logger.logFloatSensor("The water is finished. **REFILL**");
+                    // da refillare
                 }
 
-                if(numberOfPeople.get() == 0 && lightOn) {
-                    if(light != null) {
-                        logger.logPresence("The sauna is empty, the light is switched OFF");
-                        light.lightSwitch(false);
-                        lightOn = false;
-                    }
-                }
-
-                if(!full && numberOfPeople.get() >= maxNumberOfPeople.get()) {
-                    logger.logPresence("The sauna is FULL, it is not possible to enter");
-                    full = true;
-                }
-
-                if(full && numberOfPeople.get() != maxNumberOfPeople.get()) {
-                    logger.logPresence("The sauna is no longer full, you can enter now");
-                    full = false;
-                }
             }
 
             @Override
