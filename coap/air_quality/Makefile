@@ -1,5 +1,4 @@
-CONTIKI_PROJECT = air_quality
-
+CONTIKI_PROJECT = airquality
 all: $(CONTIKI_PROJECT)
 
 # Do not try to build on Sky because of code size limitation
