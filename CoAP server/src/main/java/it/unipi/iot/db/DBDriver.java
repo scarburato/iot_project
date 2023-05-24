@@ -93,7 +93,7 @@ public class DBDriver {
     public void insertTemperatureSample(TemperatureSample temperatureSample) {
         try (
                 Connection connection = getConnection();
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO temperature (node, degrees) VALUES (?, ?)")
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO temperature (`sensor's id`, degrees) VALUES (?, ?)")
         )
         {
             statement.setInt(1, temperatureSample.getNode());

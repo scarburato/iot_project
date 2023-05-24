@@ -1,4 +1,4 @@
-aDROP DATABASE IF EXISTS smart_zoo;
+DROP DATABASE IF EXISTS smart_zoo;
 
 CREATE DATABASE smart_zoo;
 
