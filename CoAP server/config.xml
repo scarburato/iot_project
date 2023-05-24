@@ -4,7 +4,7 @@
 	<databasePort>3306</databasePort>
 	<databaseUsername>root</databaseUsername>
 	<databasePassword>root</databasePassword>
-	<databaseName>smart_sauna</databaseName>
+	<databaseName>smart_zoo</databaseName>
 	<lowerBoundTemperature>70</lowerBoundTemperature>
 	<upperBoundTemperature>100</upperBoundTemperature>
 	<lowerBoundHumidity>40</lowerBoundHumidity>

@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Temperature {
-    public final String TEMPERATURE_TOPIC = "temperature";
-    public final String AC_TOPIC = "AC";
-    public final String INC = "INC";
-    public final String DEC = "DEC";
-    public final String OFF = "OFF";
+    public static final String TEMPERATURE_TOPIC = "temperature";
+    public static final String AC_TOPIC = "AC";
+    public static final String INC = "INC";
+    public static final String DEC = "DEC";
+    public static final String OFF = "OFF";
 
     private Map<Integer, TemperatureSample> lastTemperatureSamples;
     private float lowerBoundTemperature;
@@ -38,7 +38,7 @@ public class Temperature {
         System.out.println("Ora dovrei inserire " + temperatureSample.getTemperature() + "°C nel db, salto...");
         temperatureSample.setTimestamp(new Timestamp(System.currentTimeMillis()));
         lastTemperatureSamples.put(temperatureSample.getNode(), temperatureSample);
-        //DBDriver.getInstance().insertTemperatureSample(temperatureSample);
+        DBDriver.getInstance().insertTemperatureSample(temperatureSample);
 
         // remove old samples from the lastTemperatureSamples map
         lastTemperatureSamples.entrySet().removeIf(entry -> !entry.getValue().isValid());
