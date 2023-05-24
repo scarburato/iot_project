@@ -36,10 +36,6 @@ static bool registered = false;
 static struct etimer connectivity_timer;
 static struct etimer wait_registration;
 
-/* Declare and auto-start this file's process */
-PROCESS(light_server, "Light Server");
-AUTOSTART_PROCESSES(&light_server);
-
 /*---------------------------------------------------------------------------*/
 static bool is_connected() {
 	if(NETSTACK_ROUTING.node_is_reachable()) {
@@ -66,6 +62,10 @@ void client_chunk_handler(coap_message_t *response) {
 	} else
 		etimer_set(&wait_registration, CLOCK_SECOND* REGISTRATION_TRY_INTERVAL);
 }
+
+/* Declare and auto-start this file's process */
+PROCESS(light_server, "Light Server");
+AUTOSTART_PROCESSES(&light_server);
 
 PROCESS_THREAD(light_server, ev, data){
 	PROCESS_BEGIN();

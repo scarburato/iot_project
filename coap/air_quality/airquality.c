@@ -22,7 +22,7 @@
 #define SIMULATION_INTERVAL 1
 #define SENSOR_TYPE "air_quality"
 
-//#define DO_REGISTER 1
+#define DO_REGISTER 1
 
 /* Log configuration */
 #include "sys/log.h"
@@ -42,15 +42,14 @@ static struct etimer simulation_timer;
 static struct etimer connectivity_timer;
 static struct etimer wait_registration;
 
-/* Declare and auto-start this file's process */
-PROCESS(air_quality_server, "Air Quality Server");
-AUTOSTART_PROCESSES(&air_quality_server);
+
 
 /*---------------------------------------------------------------------------*/
 static bool is_connected() {
 	if(NETSTACK_ROUTING.node_is_reachable()) {
 		LOG_INFO("The Border Router is reachable\n");
 		return true;
+	}
 	
 	LOG_INFO("Waiting for connection with the Border Router\n");
 	return false;
@@ -72,11 +71,16 @@ void client_chunk_handler(coap_message_t *response) {
 		etimer_set(&wait_registration, CLOCK_SECOND* REGISTRATION_TRY_INTERVAL);
 }
 
-PROCESS_THREAD(air_quality_server, ev, data) {
-	PROCESS_BEGIN();
+/* Declare and auto-start this file's process */
+PROCESS(air_quality_server, "Air Quality Server");
+AUTOSTART_PROCESSES(&air_quality_server);
 
-	//static coap_endpoint_t server_ep;
-	//static coap_message_t request[1]; // This way the packet can be treated as pointer as usual
+PROCESS_THREAD(air_quality_server, ev, data) {
+PROCESS_BEGIN();
+#ifdef DO_REGISTER
+	static coap_endpoint_t server_ep;
+	static coap_message_t request; // This way the packet can be treated as pointer as usual
+#endif
 
 	// Init seed for stuff
 	srand(time(0));
@@ -102,12 +106,12 @@ PROCESS_THREAD(air_quality_server, ev, data) {
 		coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
 		
 		// Prepare the message
-		coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
-		coap_set_header_uri_path(request, service_url);
-		coap_set_payload(request, (uint8_t *)SENSOR_TYPE, sizeof(SENSOR_TYPE) - 1);
+		coap_init_message(&request, COAP_TYPE_CON, COAP_POST, 0);
+		coap_set_header_uri_path(&request, service_url);
+		coap_set_payload(&request, (uint8_t *)SENSOR_TYPE, sizeof(SENSOR_TYPE) - 1);
 
 		// Prob. invio pacchetto (?)
-		COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
+		COAP_BLOCKING_REQUEST(&server_ep, &request, client_chunk_handler);
 
 		PROCESS_WAIT_UNTIL(etimer_expired(&wait_registration));
 	}
