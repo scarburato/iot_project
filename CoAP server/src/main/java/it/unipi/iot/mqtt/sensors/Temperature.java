@@ -36,12 +36,12 @@ public class Temperature {
     public void addTemperatureSample (TemperatureSample temperatureSample)
     {
         System.out.println("Ora dovrei inserire " + temperatureSample.getTemperature() + "°C nel db, salto...");
-        //temperatureSample.setTimestamp(new Timestamp(System.currentTimeMillis()));
-        //lastTemperatureSamples.put(temperatureSample.getNode(), temperatureSample);
+        temperatureSample.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        lastTemperatureSamples.put(temperatureSample.getNode(), temperatureSample);
         //DBDriver.getInstance().insertTemperatureSample(temperatureSample);
 
         // remove old samples from the lastTemperatureSamples map
-        //lastTemperatureSamples.entrySet().removeIf(entry -> !entry.getValue().isValid());
+        lastTemperatureSamples.entrySet().removeIf(entry -> !entry.getValue().isValid());
     }
 
     /**
