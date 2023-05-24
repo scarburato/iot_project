@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Humidity {
-    public final String HUMIDITY_TOPIC = "humidity";
-    public final String HUMIDIFIER_TOPIC = "humidifier";
-    public final String INC = "INC";
-    public final String DEC = "DEC";
-    public final String OFF = "OFF";
+    public static final String HUMIDITY_TOPIC = "humidity";
+    public static final String HUMIDIFIER_TOPIC = "humidifier";
+    public static final String INC = "INC";
+    public static final String DEC = "DEC";
+    public static final String OFF = "OFF";
 
     private Map<Integer, HumiditySample> lastHumiditySamples;
     private float lowerBoundHumidity;

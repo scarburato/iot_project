@@ -48,10 +48,10 @@ public class Handler implements MqttCallback {
      */
     private void connectToBroker () throws MqttException {
         mqttClient.connect();
-        mqttClient.subscribe(humidityCollector.HUMIDITY_TOPIC);
-        System.out.println("Subscribed to: " + humidityCollector.HUMIDITY_TOPIC);
-        mqttClient.subscribe(temperatureCollector.TEMPERATURE_TOPIC);
-        System.out.println("Subscribed to: " + temperatureCollector.TEMPERATURE_TOPIC);
+        mqttClient.subscribe(Humidity.HUMIDITY_TOPIC);
+        System.out.println("Subscribed to: " + Humidity.HUMIDITY_TOPIC);
+        mqttClient.subscribe(Temperature.TEMPERATURE_TOPIC);
+        System.out.println("Subscribed to: " + Temperature.TEMPERATURE_TOPIC);
     }
 
     /**
@@ -101,7 +101,7 @@ public class Handler implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
         String payload = new String(mqttMessage.getPayload());
-        if (topic.equals(humidityCollector.HUMIDITY_TOPIC))
+        if (topic.equals(Humidity.HUMIDITY_TOPIC))
         {
             HumiditySample humiditySample = parser.fromJson(payload, HumiditySample.class);
             humidityCollector.addHumiditySample(humiditySample);
@@ -109,33 +109,33 @@ public class Handler implements MqttCallback {
             float midRange = humidityCollector.getMidRange();
             if (newAverage < (humidityCollector.getLowerBoundHumidity() + (midRange - humidityCollector.getLowerBoundHumidity())/2))
             {
-                if (!humidityCollector.getLastCommand().equals(humidityCollector.INC))
+                if (!humidityCollector.getLastCommand().equals(Humidity.INC))
                 {
                     logger.logHumidity("Average level of Humidity too low: " + newAverage + "%, increase it");
-                    publishMessage(humidityCollector.HUMIDIFIER_TOPIC, humidityCollector.INC);
-                    humidityCollector.setLastCommand(humidityCollector.INC);
+                    publishMessage(Humidity.HUMIDIFIER_TOPIC, Humidity.INC);
+                    humidityCollector.setLastCommand(Humidity.INC);
                 }
                 else
                     logger.logHumidity("Average level of Humidity too low: " + newAverage + "%, but is increasing");
             }
             else if (newAverage > (humidityCollector.getUpperBoundHumidity() - (humidityCollector.getUpperBoundHumidity() - midRange)/2))
             {
-                if (!humidityCollector.getLastCommand().equals(humidityCollector.DEC))
+                if (!humidityCollector.getLastCommand().equals(Humidity.DEC))
                 {
                     logger.logHumidity("Average level of Humidity too high: " + newAverage + "%, decrease it");
-                    publishMessage(humidityCollector.HUMIDIFIER_TOPIC, humidityCollector.DEC);
-                    humidityCollector.setLastCommand(humidityCollector.DEC);
+                    publishMessage(Humidity.HUMIDIFIER_TOPIC, Humidity.DEC);
+                    humidityCollector.setLastCommand(Humidity.DEC);
                 }
                 else
                     logger.logHumidity("Average level of Humidity too high: " + newAverage + "%, but is decreasing");
             }
             else
             {
-                if (!humidityCollector.getLastCommand().equals(humidityCollector.OFF))
+                if (!humidityCollector.getLastCommand().equals(Humidity.OFF))
                 {
                     logger.logHumidity("Correct average humidity level: " + newAverage + "%, switch off the humidifier/dehumidifier");
-                    publishMessage(humidityCollector.HUMIDIFIER_TOPIC, humidityCollector.OFF);
-                    humidityCollector.setLastCommand(humidityCollector.OFF);
+                    publishMessage(Humidity.HUMIDIFIER_TOPIC, Humidity.OFF);
+                    humidityCollector.setLastCommand(Humidity.OFF);
                 }
                 else
                 {
@@ -143,7 +143,7 @@ public class Handler implements MqttCallback {
                 }
             }
         }
-        else if (topic.equals(temperatureCollector.TEMPERATURE_TOPIC))
+        else if (topic.equals(Temperature.TEMPERATURE_TOPIC))
         {
             TemperatureSample temperatureSample = parser.fromJson(payload, TemperatureSample.class);
             temperatureCollector.addTemperatureSample(temperatureSample);
@@ -151,33 +151,33 @@ public class Handler implements MqttCallback {
             float midRange = temperatureCollector.getMidRange();
             if (newAverage < (temperatureCollector.getLowerBoundTemperature() + (midRange - temperatureCollector.getLowerBoundTemperature())/2))
             {
-                if (!temperatureCollector.getLastCommand().equals(temperatureCollector.INC))
+                if (!temperatureCollector.getLastCommand().equals(Temperature.INC))
                 {
                     logger.logTemperature("Average level of temperature too low: " + newAverage + "°C, increase it");
-                    publishMessage(temperatureCollector.AC_TOPIC, temperatureCollector.INC);
-                    temperatureCollector.setLastCommand(temperatureCollector.INC);
+                    publishMessage(Temperature.AC_TOPIC, Temperature.INC);
+                    temperatureCollector.setLastCommand(Temperature.INC);
                 }
                 else
                     logger.logTemperature("Average level of temperature too low: " + newAverage + "°C, but is increasing");
             }
             else if (newAverage > (temperatureCollector.getUpperBoundTemperature() - (temperatureCollector.getUpperBoundTemperature() - midRange)/2))
             {
-                if (!temperatureCollector.getLastCommand().equals(temperatureCollector.DEC))
+                if (!temperatureCollector.getLastCommand().equals(Temperature.DEC))
                 {
                     logger.logTemperature("Average level of temperature too high: " + newAverage + "°C, decrease it");
-                    publishMessage(temperatureCollector.AC_TOPIC, temperatureCollector.DEC);
-                    temperatureCollector.setLastCommand(temperatureCollector.DEC);
+                    publishMessage(Temperature.AC_TOPIC, Temperature.DEC);
+                    temperatureCollector.setLastCommand(Temperature.DEC);
                 }
                 else
                     logger.logTemperature("Average level of temperature too high: " + newAverage + "°C, but is decreasing");
             }
             else
             {
-                if (!temperatureCollector.getLastCommand().equals(temperatureCollector.OFF))
+                if (!temperatureCollector.getLastCommand().equals(Temperature.OFF))
                 {
                     logger.logTemperature("Correct average temperature level: " + newAverage +"°C, switch off the AC");
-                    publishMessage(temperatureCollector.AC_TOPIC, temperatureCollector.OFF);
-                    temperatureCollector.setLastCommand(temperatureCollector.OFF);
+                    publishMessage(Temperature.AC_TOPIC, Temperature.OFF);
+                    temperatureCollector.setLastCommand(Temperature.OFF);
                 }
                 else
                     logger.logTemperature("Correct average temperature level: " + newAverage + "°C");
