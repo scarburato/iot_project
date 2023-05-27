@@ -16,3 +16,7 @@ report.pdf
 build/
 
 *.native
+
+.clangd
+
+.vscode/

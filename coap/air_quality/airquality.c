@@ -25,7 +25,7 @@
 #define DO_REGISTER 1
 
 /* Log configuration */
-#include "sys/log.h"
+#include "os/sys/log.h"
 #define LOG_MODULE "air-quality"
 #define LOG_LEVEL LOG_LEVEL_APP
 
