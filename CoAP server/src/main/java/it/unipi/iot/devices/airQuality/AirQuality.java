@@ -112,6 +112,10 @@ public class AirQuality {
         }
     }
 
+    public CoapClient gimmeÐat() {
+        return clientVentilationSystemList.get(0);
+    }
+
     public int getCO2Level() {
         return co2Level.get();
     }

@@ -57,7 +57,7 @@ public class DBDriver {
         )
         {
             statement.setInt(1, airQualitySample.getNode());
-            statement.setDouble(2, airQualitySample.getConcentration());
+            statement.setDouble(2, airQualitySample.getCo2());
             statement.executeUpdate();
         }
         catch (final SQLException e)

@@ -5,14 +5,14 @@ import java.util.Calendar;
 
 public class AirQualitySample {
     private int node; // Node ID
-    private int concentration;
+    private int co2;
 
     private Timestamp timestamp; // set by the collector
 
 
-    public AirQualitySample(int node, int concentration, Timestamp timestamp) {
+    public AirQualitySample(int node, int co2, Timestamp timestamp) {
         this.node = node;
-        this.concentration = concentration;
+        this.co2 = co2;
         this.timestamp = timestamp;
     }
 
@@ -38,12 +38,12 @@ public class AirQualitySample {
         this.node = node;
     }
 
-    public int getConcentration() {
-        return concentration;
+    public int getCo2() {
+        return co2;
     }
 
-    public void setConcentration(int concentration) {
-        this.concentration = concentration;
+    public void setCo2(int co2) {
+        this.co2 = co2;
     }
 
     public Timestamp getTimestamp() {
@@ -58,7 +58,7 @@ public class AirQualitySample {
     public String toString() {
         return "AirQualitySample{" +
                 "node=" + node +
-                ", concentration=" + concentration +
+                ", concentration=" + co2 +
                 ", timestamp=" + timestamp +
                 '}';
     }

@@ -2,7 +2,6 @@ package it.unipi.iot.mqtt.sensors;
 
 import it.unipi.iot.db.DBDriver;
 import it.unipi.iot.model.AirQualitySample;
-import it.unipi.iot.model.TemperatureSample;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -10,10 +9,6 @@ import java.util.Map;
 
 public class Co2 {
     public static final String CO2_TOPIC = "co2";
-    public static final String VENTILATION_TOPIC = "ventilation";
-    public static final String INC = "INC";
-    public static final String DEC = "DEC";
-    public static final String OFF = "OFF";
 
     private final Map<Integer, AirQualitySample> lastCo2Samples;
     private float lowerBoundCo2;
@@ -25,17 +20,16 @@ public class Co2 {
         //ConfigurationParameters configurationParameters = ConfigurationParameters.getInstance();
         // TO DO DA SISTEMARE CON VALORI PAPABILI
         lowerBoundCo2 = 70;// = configurationParameters.getLowerBoundTemperature();
-        upperBoundCo2 = 100; //configuratioupperBoundTemperaturenParameters.getUpperBoundTemperature();
-        lastCommand = OFF;
+        upperBoundCo2 = 100; //configuratioupperBoundTemperaturenParameters.getUpperBoundTemperature()
     }
 
     /**
      * Function that adds a new co2 sample
      * @param co2Sample    co2 sample received
      */
-    public void addTemperatureSample (AirQualitySample co2Sample)
+    public void addSample(AirQualitySample co2Sample)
     {
-        System.out.println("Ora dovrei inserire " + co2Sample.getConcentration() + "pbm nel db, salto...");
+        System.out.println("Ora dovrei inserire " + co2Sample.getCo2() + "pbm nel db, salto...");
         co2Sample.setTimestamp(new Timestamp(System.currentTimeMillis()));
         lastCo2Samples.put(co2Sample.getNode(), co2Sample);
         DBDriver.getInstance().insertAirQualitySample(co2Sample);
@@ -52,7 +46,7 @@ public class Co2 {
     {
         int howMany = lastCo2Samples.size();
         float sum = lastCo2Samples.values().stream()
-                .map(AirQualitySample::getConcentration) // take only the concentration
+                .map(AirQualitySample::getCo2) // take only the concentration
                 .reduce( 0, Integer::sum); // sum the values
         return sum / howMany;
     }

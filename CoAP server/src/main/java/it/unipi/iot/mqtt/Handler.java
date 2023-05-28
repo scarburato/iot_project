@@ -1,13 +1,16 @@
 package it.unipi.iot.mqtt;
 
 import com.google.gson.Gson;
+import it.unipi.iot.devices.DevicesHandler;
 import it.unipi.iot.log.Logger;
+import it.unipi.iot.model.AirQualitySample;
 import it.unipi.iot.model.HumiditySample;
 import it.unipi.iot.model.TemperatureSample;
 import it.unipi.iot.mqtt.sensors.Co2;
 import it.unipi.iot.mqtt.sensors.Humidity;
 import it.unipi.iot.mqtt.sensors.Temperature;
 import it.unipi.iot.mqtt.sensors.WaterFloat;
+import org.eclipse.californium.core.CoapClient;
 import org.eclipse.paho.client.mqttv3.*;
 
 import java.net.SocketException;
@@ -194,6 +197,11 @@ public class Handler implements MqttCallback {
                 else
                     logger.logTemperature("Correct average temperature level: " + newAverage + "°C");
             }
+        }
+        else if (topic.equals(Co2.CO2_TOPIC)) {
+            AirQualitySample airQualitySample = parser.fromJson(payload, AirQualitySample.class);
+            co2Collector.addSample(airQualitySample);
+            //DevicesHandler.getInstance().
         }
     }
 
