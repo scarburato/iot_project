@@ -1,8 +1,0 @@
- 
- // per ottenere il valore del sensore di co2 (get)
- coap-client -m get coap://[fd00::202:2:2:2]/air_quality/co2
-
- 
- // Per accendere la ventola (put)
- coap-client -m put coap://[fd00::202:2:2:2]/air_quality/ventilation -e mode=ON
-

@@ -1,4 +1,4 @@
-CONTIKI_PROJECT = float
+CONTIKI_PROJECT = dehumidifier
 
 all: $(CONTIKI_PROJECT)
 

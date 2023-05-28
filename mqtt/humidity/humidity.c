@@ -262,8 +262,7 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
 			state = STATE_INIT;
 			break;
 			}
-			etimer_set(&periodic_timer, PUBLISH_INTERVAL);
-			}
-			PROCESS_END();
-
+		etimer_set(&periodic_timer, PUBLISH_INTERVAL);
+		}
+		PROCESS_END();
 }

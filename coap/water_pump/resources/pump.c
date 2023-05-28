@@ -7,22 +7,21 @@
 /* Log configuration */
 #include "sys/log.h"
 #define LOG_MODULE "light-switch"
-#define LOG_LEVEL LOG_LEVEL_APP
+#define LOG_LEVEL LOG_LEVEL_DBG
 
-extern uint8_t led;
 
-static void light_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+static void pump_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 
 RESOURCE(res_light_switch,
          "title=\"Pump's motor\";rt=\"Control\"",
          NULL,
          NULL,
-         light_put_handler,
+         pump_put_handler,
          NULL);
 
-bool light_on = false;
+bool pump_on = false;
 
-static void light_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset) {
+static void pump_put_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset) {
 	size_t len = 0;
 	const char *text = NULL;
 		
@@ -31,13 +30,13 @@ static void light_put_handler(coap_message_t *request, coap_message_t *response,
 		goto error;
 	
 	if(strncmp(text, "ON", len) == 0) {
-		light_on = true;
-		leds_set(LEDS_NUM_TO_MASK(led));
-		LOG_INFO("Light ON\n");
+		pump_on = true;
+		leds_set(LEDS_NUM_TO_MASK(LEDS_BLUE));
+		LOG_INFO("PUMP ON\n");
 	} else if(strncmp(text, "OFF", len) == 0) {
-		light_on = false;
-		leds_off(LEDS_ALL);
-		LOG_INFO("Light OFF\n");
+		pump_on = false;
+		leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
+		LOG_INFO("PUMP OFF\n");
 	}
 	else
 		goto error;
