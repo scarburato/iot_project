@@ -99,14 +99,20 @@ static bool update_co2()
         value = rand() % 7 + 6; // a random number in [6;12]
         co2_level = (int)(co2_level - value);
     }
+    else
+    {
+        value = rand() % 16;                         // a random number between 0 and 15
+        co2_level = (int)(co2_level + 0.75 * value); // In any case, the CO2 level can only increase more or less rapidly
+    }
 
-    value = rand() % 16;                         // a random number between 0 and 15
-    co2_level = (int)(co2_level + 0.75 * value); // In any case, the CO2 level can only increase more or less rapidly
-
-    if (old_co2_level != co2_level)
-        updated = true;
-
-    return updated;
+    if (value < 350)
+        leds_set(LEDS_NUM_TO_MASK(LEDS_GREEN));
+    else if (value >= 350 && value < 500)
+        leds_set(LEDS_NUM_TO_MASK(LEDS_YELLOW));
+    else
+        leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
+    
+    return old_co2_level != co2_level;
 }
 
 // This function is called each time occurs a MQTT event
@@ -188,7 +194,6 @@ PROCESS_THREAD(co2_process, ev, data)
 	// Init seed for stuff
 	srand(time(0));
 
-	leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
 	PROCESS_PAUSE();
 
     // Initialize periodic timer to check the status

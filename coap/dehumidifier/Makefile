@@ -1,4 +1,5 @@
-CONTIKI_PROJECT = airquality
+CONTIKI_PROJECT = dehumidifier
+
 all: $(CONTIKI_PROJECT)
 
 # Do not try to build on Sky because of code size limitation
