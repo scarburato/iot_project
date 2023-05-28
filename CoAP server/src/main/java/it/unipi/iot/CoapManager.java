@@ -45,6 +45,7 @@ public class CoapManager extends CoapServer {
             switch (deviceType) {
                 case "pump":
                     coapDevicesHandler.registerFloatSensor(ip);
+                    break;
                 case "air_quality":
                     coapDevicesHandler.registerAirQuality(ip);
                     break;
