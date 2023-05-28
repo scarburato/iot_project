@@ -129,7 +129,7 @@ static bool update_co2()
     if (ventilation_on)
     {                           // If the ventilation system is turned on, air quality improves
         value = rand() % 7 + 6; // a random number in [6;12]
-        co2_level = (int)(co2_level - value);
+        co2_level = (int)(co2_level - 2.1 * value);
     }
     else
     {
@@ -137,10 +137,10 @@ static bool update_co2()
         co2_level = (int)(co2_level + 0.75 * value); // In any case, the CO2 level can only increase more or less rapidly
     }
 
-    if (value < 350)
+    if (co2_level < 350)
         leds_set(LEDS_NUM_TO_MASK(LEDS_GREEN));
-    else if (value >= 350 && value < 500)
-        leds_set(LEDS_NUM_TO_MASK(LEDS_YELLOW));
+    else if (co2_level >= 350 && co2_level < 500)
+        leds_set(LEDS_NUM_TO_MASK(LEDS_ORANGE));
     else
         leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
     
@@ -199,42 +199,77 @@ static bool have_connectivity(void)
 
 PROCESS_THREAD(co2_process, ev, data)
 {
-    PROCESS_BEGIN();
+	PROCESS_BEGIN();
 
-    static mqtt_status_t status;
-    static char broker_address[CONFIG_IP_ADDR_STR_LEN] = {0};
+	static mqtt_status_t status;
+	static char broker_address[CONFIG_IP_ADDR_STR_LEN] = {0};
+	static button_hal_button_t *btn;
 
-    LOG_INFO("Avvio...");
+	LOG_INFO("Avvio...");
 
-    // Initialize the ClientID as MAC address
-    snprintf(client_id, BUFFER_SIZE, "%02x%02x%02x%02x%02x%02x",
-             linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
-             linkaddr_node_addr.u8[2], linkaddr_node_addr.u8[5],
-             linkaddr_node_addr.u8[6], linkaddr_node_addr.u8[7]);
+	btn = button_hal_get_by_index(0);
+	if(btn == NULL) {
+		LOG_ERR("Unable to find button 0... exit");
+		goto exit;
+	}
 
-    // Broker registration
-    mqtt_register(&conn, &co2_process, client_id, mqtt_event, MAX_TCP_SEGMENT_SIZE);
+	// Initialize the ClientID as MAC address
+	snprintf(client_id, BUFFER_SIZE, "%02x%02x%02x%02x%02x%02x",
+		linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
+		linkaddr_node_addr.u8[2], linkaddr_node_addr.u8[5],
+		linkaddr_node_addr.u8[6], linkaddr_node_addr.u8[7]);
 
-    state = STATE_INIT;
+	// Broker registration
+	mqtt_register(&conn, &co2_process, client_id, mqtt_event, MAX_TCP_SEGMENT_SIZE);
 
-    // CoAP init
-#ifdef DO_REGISTER
-	static coap_endpoint_t server_ep;
-	static coap_message_t request; // This way the packet can be treated as pointer as usual
-#endif
+	state = STATE_INIT;
 
 	// Init seed for stuff
 	srand(time(0));
 
 	PROCESS_PAUSE();
 
-    // Initialize periodic timer to check the status
-    etimer_set(&periodic_timer, PUBLISH_INTERVAL);
+	// Initialize periodic timer to check the status
+	etimer_set(&periodic_timer, PUBLISH_INTERVAL);
+
+	// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+#ifdef DO_REGISTER
+	goto balzo;
+registra:
+	coap_endpoint_t server_ep;
+	coap_message_t request;
+
+	while(!registered) {
+		LOG_INFO("Sending CoAP registration message\n");
+		coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
+
+		// Prepare the message
+		coap_init_message(&request, COAP_TYPE_CON, COAP_POST, 0);
+		coap_set_header_uri_path(&request, service_url);
+		coap_set_payload(&request, (uint8_t *)SENSOR_TYPE, sizeof(SENSOR_TYPE) - 1);
+
+		// Prob. invio pacchetto (?)
+		COAP_BLOCKING_REQUEST(&server_ep, &request, client_chunk_handler);
+
+		PROCESS_WAIT_UNTIL(etimer_expired(&wait_registration));
+	}
+
+	LOG_INFO("CoAP DONE!!!\n");
+	goto fine_registra;
+
+balzo:
+#endif
+	// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
     while (true)
     {
         PROCESS_YIELD();
 
+	if(ev == button_hal_press_event) {
+		co2_level += 300;
+		LOG_INFO("Manually increased co2 to %dppm\n", co2_level);
+	}
+	
         update_co2();
 
         if ((ev == PROCESS_EVENT_TIMER && data == &periodic_timer) || ev == PROCESS_EVENT_POLL)
@@ -242,7 +277,7 @@ PROCESS_THREAD(co2_process, ev, data)
             switch (state)
             {
             case STATE_INIT:
-                LOG_INFO("state init..");
+                LOG_INFO("state init..\n");
                 if (!have_connectivity())
                     break;
 
@@ -260,20 +295,8 @@ PROCESS_THREAD(co2_process, ev, data)
 	            coap_activate_resource(&res_ventilation_system, "air_quality/ventilation");
 
 #ifdef DO_REGISTER
-                while(!registered) {
-                    LOG_INFO("Sending registration message\n");
-                    coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
-                    
-                    // Prepare the message
-                    coap_init_message(&request, COAP_TYPE_CON, COAP_POST, 0);
-                    coap_set_header_uri_path(&request, service_url);
-                    coap_set_payload(&request, (uint8_t *)SENSOR_TYPE, sizeof(SENSOR_TYPE) - 1);
-
-                    // Prob. invio pacchetto (?)
-                    COAP_BLOCKING_REQUEST(&server_ep, &request, client_chunk_handler);
-
-                    //PROCESS_WAIT_UNTIL(etimer_expired(&wait_registration));
-                }
+		goto registra;
+fine_registra:
 #endif
 
                 state = STATE_CONNECTING;
@@ -311,5 +334,7 @@ PROCESS_THREAD(co2_process, ev, data)
             etimer_set(&periodic_timer, PUBLISH_INTERVAL);
         }
     }
+
+exit:
     PROCESS_END();
 }

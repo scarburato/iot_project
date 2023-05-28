@@ -2,6 +2,7 @@ package it.unipi.iot;
 
 import it.unipi.iot.devices.DevicesHandler;
 import it.unipi.iot.devices.light.Light;
+import it.unipi.iot.log.Logger;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.coap.CoAP;
@@ -42,11 +43,14 @@ public class CoapManager extends CoapServer {
             String ip = exchange.getSourceAddress().getHostAddress();
             boolean success = true;
 
+            System.out.println("Incoming registration request from " + ip + " of type " + deviceType);
+
             switch (deviceType) {
                 case "pump":
                     coapDevicesHandler.registerFloatSensor(ip);
                     break;
                 case "air_quality":
+                case "co2":
                     coapDevicesHandler.registerAirQuality(ip);
                     break;
                 case "light":

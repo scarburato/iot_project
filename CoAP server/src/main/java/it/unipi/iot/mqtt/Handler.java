@@ -202,7 +202,7 @@ public class Handler implements MqttCallback {
         }
         else if (topic.equals(Co2.CO2_TOPIC)) {
             AirQualitySample airQualitySample = parser.fromJson(payload, AirQualitySample.class);
-            co2Collector.addSample(airQualitySample);
+            //co2Collector.addSample(airQualitySample);
             DevicesHandler.getInstance().getAirQuality().gimmeÐat().put(airQualitySample.getCo2() >= 500 ? "ON" : "OFF", MediaTypeRegistry.TEXT_PLAIN);
         }
     }

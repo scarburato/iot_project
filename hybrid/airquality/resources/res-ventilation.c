@@ -26,7 +26,9 @@ static void co2_put_handler(coap_message_t *request, coap_message_t *response, u
 	char mode[4];
 	memset(mode, 0, 3);
 
-	len = coap_get_post_variable(request, "mode", &text);
+	// @FIXME
+	//len = coap_get_post_variable(request, "mode", &text);
+	len = coap_get_payload(request, (const uint8_t**)(&text));
 
 	if(len <= 0 || len >= 4)
 		goto exit_fail;
