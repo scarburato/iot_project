@@ -14,7 +14,7 @@
 #include "net/ipv6/uip-debug.h"
 #include "routing/routing.h"
 
-#define SERVER_EP "coap://[fd00::1]:5683" // da capire che metterci
+#define SERVER_EP "coap://[fd00::1]:5683"
 #define CONNECTION_TRY_INTERVAL 1
 #define REGISTRATION_TRY_INTERVAL 1
 #define SIMULATION_INTERVAL 1
@@ -22,8 +22,8 @@
 
 /* Log configuration */
 #include "sys/log.h"
-#define LOG_MODULE "light"
-#define LOG_LEVEL LOG_LEVEL_APP
+#define LOG_MODULE "water_pump"
+#define LOG_LEVEL LOG_LEVEL_DBG
 
 #define INTERVAL_BETWEEN_CONNECTION_TESTS 1
 
@@ -64,18 +64,22 @@ void client_chunk_handler(coap_message_t *response) {
 }
 
 /* Declare and auto-start this file's process */
-PROCESS(light_server, "Light Server");
+PROCESS(light_server, "Water pump Server");
 AUTOSTART_PROCESSES(&light_server);
 
 PROCESS_THREAD(light_server, ev, data){
 	PROCESS_BEGIN();
 
-	//static coap_endpoint_t server_ep;
-    //static coap_message_t request[1]; // This way the packet can be treated as pointer as usual
+#ifdef DO_REGISTER
+	static coap_endpoint_t server_ep;
+    static coap_message_t request[1]; // This way the packet can be treated as pointer as usual
+#endif
 
 	PROCESS_PAUSE();
 
-	LOG_INFO("Starting Light CoAP-Pump\n");
+	leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
+
+	LOG_INFO("Starting CoAP-Pump\n");
 	coap_activate_resource(&res_light_switch, "pump"); 
 
 	// try to connect to the border router
@@ -85,7 +89,8 @@ PROCESS_THREAD(light_server, ev, data){
 		etimer_reset(&connectivity_timer);
 		PROCESS_WAIT_UNTIL(etimer_expired(&connectivity_timer));
 	}
-/*
+
+#ifdef DO_REGISTER
 	while(!registered) {
         LOG_INFO("Sending registration message\n");
         coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
@@ -98,6 +103,6 @@ PROCESS_THREAD(light_server, ev, data){
 
         PROCESS_WAIT_UNTIL(etimer_expired(&wait_registration));
     }
-    */
+#endif
 	PROCESS_END();
 }

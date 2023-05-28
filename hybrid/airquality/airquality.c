@@ -18,7 +18,7 @@
 #include <sys/node-id.h>
 #include <time.h>
 
-#define LOG_MODULE "humidity"
+#define LOG_MODULE "airquality"
 #ifdef MQTT_CLIENT_CONF_LOG_LEVEL
 #define LOG_LEVEL MQTT_CLIENT_CONF_LOG_LEVEL
 #else
@@ -27,6 +27,7 @@
 
 /* MQTT broker address. */
 #define MQTT_CLIENT_BROKER_IP_ADDR "fd00::1"
+//#define MQTT_CLIENT_BROKER_IP_ADDR "fd00::f6ce:36b3:3f0b:956"
 
 static const char *broker_ip = MQTT_CLIENT_BROKER_IP_ADDR;
 
@@ -47,8 +48,8 @@ static uint8_t state;
 #define STATE_SUBSCRIBED 4   // Topics subscription done
 #define STATE_DISCONNECTED 5 // Disconnected from MQTT broker
 
-PROCESS_NAME(humidity_analyzer_process);
-AUTOSTART_PROCESSES(&humidity_analyzer_process);
+PROCESS_NAME(co2_process);
+AUTOSTART_PROCESSES(&co2_process);
 
 /* Maximum TCP segment size for outgoing segments of our socket */
 #define MAX_TCP_SEGMENT_SIZE 32
@@ -82,7 +83,7 @@ static struct mqtt_connection conn;
 extern coap_resource_t res_ventilation_system;
 
 
-PROCESS(humidity_analyzer_process, "CO2 analyzer process");
+PROCESS(co2_process, "CO2 analyzer process");
 
 static unsigned int co2_level = 300;
 bool ventilation_on = false;
@@ -120,13 +121,13 @@ static void mqtt_event(struct mqtt_connection *m, mqtt_event_t event, void *data
     case MQTT_EVENT_DISCONNECTED:
         printf("MQTT connection disconnected. Reason: %u\n", *((mqtt_event_t *)data));
         state = STATE_DISCONNECTED;
-        process_poll(&humidity_analyzer_process);
+        process_poll(&co2_process);
         break;
     case MQTT_EVENT_PUBLISH:
         msg_ptr = data;
         LOG_INFO(
-            "Message received: topic='%s' (len=%lu), chunk_len=%u\n",
-            msg_ptr->topic, strlen(msg_ptr->topic), msg_ptr->payload_length
+            "Message received: topic='%s' (len=%u), chunk_len=%u\n",
+            msg_ptr->topic, (unsigned int)strlen(msg_ptr->topic), msg_ptr->payload_length
         );
         break;
     case MQTT_EVENT_SUBACK:
@@ -154,10 +155,11 @@ static void mqtt_event(struct mqtt_connection *m, mqtt_event_t event, void *data
 
 static bool have_connectivity(void)
 {
+    //return true;
     return !(uip_ds6_get_global(ADDR_PREFERRED) == NULL || uip_ds6_defrt_choose() == NULL);
 }
 
-PROCESS_THREAD(humidity_analyzer_process, ev, data)
+PROCESS_THREAD(co2_process, ev, data)
 {
     PROCESS_BEGIN();
 
@@ -173,7 +175,7 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
              linkaddr_node_addr.u8[6], linkaddr_node_addr.u8[7]);
 
     // Broker registration
-    mqtt_register(&conn, &humidity_analyzer_process, client_id, mqtt_event, MAX_TCP_SEGMENT_SIZE);
+    mqtt_register(&conn, &co2_process, client_id, mqtt_event, MAX_TCP_SEGMENT_SIZE);
 
     state = STATE_INIT;
 
@@ -241,7 +243,7 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
                 break;
             case STATE_CONNECTED:
                 // Subscribe to a topic
-                strcpy(sub_topic, "humidifier");
+                strcpy(sub_topic, "co2");
                 status = mqtt_subscribe(&conn, NULL, sub_topic, MQTT_QOS_LEVEL_0);
                 if (status == MQTT_STATUS_OUT_QUEUE_FULL)
                 {
@@ -256,7 +258,7 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
                 // simulate the behavior of the sensor
                 // @TODO
 
-                LOG_INFO("New value of co2: %d%%\n", co2_level);
+                LOG_INFO("New value of co2: %dppm\n", co2_level);
 
                 sprintf(app_buffer, "{\"node\": %d, \"co2\": %d}", node_id, co2_level);
                 mqtt_publish(&conn, NULL, pub_topic, (uint8_t *)app_buffer,

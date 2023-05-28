@@ -156,9 +156,16 @@ PROCESS_THREAD(process_for_temperature_sensor, ev, data) {
 
 	PROCESS_BEGIN();
 
+	static button_hal_button_t *btn;
 	static mqtt_status_t status;
 	static char broker_address[CONFIG_IP_ADDR_STR_LEN];
 	
+	btn = button_hal_get_by_index(0);
+	if(btn == NULL) {
+		LOG_ERR("Unable to find button 0... exit");
+		goto exit;
+	}
+
 	LOG_INFO("Avvio...");
 	
 	// Initialize the ClientID as MAC address
@@ -236,5 +243,7 @@ PROCESS_THREAD(process_for_temperature_sensor, ev, data) {
 		}
 		etimer_set(&periodic_timer, PUBLISH_INTERVAL);
 	}
+
+exit:
 	PROCESS_END();
 }
