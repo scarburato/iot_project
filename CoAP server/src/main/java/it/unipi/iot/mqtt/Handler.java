@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import it.unipi.iot.log.Logger;
 import it.unipi.iot.model.HumiditySample;
 import it.unipi.iot.model.TemperatureSample;
+import it.unipi.iot.mqtt.sensors.Co2;
 import it.unipi.iot.mqtt.sensors.Humidity;
 import it.unipi.iot.mqtt.sensors.Temperature;
+import it.unipi.iot.mqtt.sensors.WaterFloat;
 import org.eclipse.paho.client.mqttv3.*;
 
 import java.net.SocketException;
@@ -21,6 +23,9 @@ public class Handler implements MqttCallback {
     private Humidity humidityCollector;
     private Temperature temperatureCollector;
 
+    private Co2 co2Collector;
+    private WaterFloat waterFloatCollector;
+
     private Logger logger;
 
     public Handler ()
@@ -29,6 +34,8 @@ public class Handler implements MqttCallback {
         logger = Logger.getInstance();
         humidityCollector = new Humidity();
         temperatureCollector = new Temperature();
+        co2Collector = new Co2();
+        waterFloatCollector = new WaterFloat();
         do {
             try {
                 mqttClient = new MqttClient(BROKER, CLIENT_ID);
@@ -52,6 +59,10 @@ public class Handler implements MqttCallback {
         System.out.println("Subscribed to: " + Humidity.HUMIDITY_TOPIC);
         mqttClient.subscribe(Temperature.TEMPERATURE_TOPIC);
         System.out.println("Subscribed to: " + Temperature.TEMPERATURE_TOPIC);
+        mqttClient.subscribe(Co2.CO2_TOPIC);
+        System.out.println("Subscribed to: " + Co2.CO2_TOPIC);
+        mqttClient.subscribe(WaterFloat.FLOAT_TOPIC);
+        System.out.println("Subscribed to: " + WaterFloat.FLOAT_TOPIC);
     }
 
     /**
