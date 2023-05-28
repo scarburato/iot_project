@@ -10,5 +10,4 @@
 	<lowerBoundHumidity>40</lowerBoundHumidity>
 	<upperBoundHumidity>60</upperBoundHumidity>
 	<upperBoundAirQuality>500</upperBoundAirQuality>
-	<maxNumberOfPeople>20</maxNumberOfPeople>
 </it.unipi.iot.config.ConfigurationParameters>

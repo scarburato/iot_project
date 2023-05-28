@@ -21,7 +21,6 @@ import java.nio.file.Paths;
  */
 public class ConfigurationParameters {
     private static volatile ConfigurationParameters instance;
-
     private String databaseIp;
     private int databasePort;
     private String databaseUsername;
@@ -33,7 +32,6 @@ public class ConfigurationParameters {
     private float lowerBoundHumidity;
     private float upperBoundHumidity;
     private int upperBoundAirQuality;
-    private int maxNumberOfPeople;
 
     public static ConfigurationParameters getInstance() {
         if (instance == null) {
@@ -134,9 +132,6 @@ public class ConfigurationParameters {
         return upperBoundAirQuality;
     }
 
-    public int getMaxNumberOfPeople() {
-        return maxNumberOfPeople;
-    }
 
     @Override
     public String toString() {
@@ -151,7 +146,6 @@ public class ConfigurationParameters {
                 ", lowerBoundHumidity=" + lowerBoundHumidity +
                 ", upperBoundHumidity=" + upperBoundHumidity +
                 ", upperBoundAirQuality=" + upperBoundAirQuality +
-                ", maxNumberOfPeople=" + maxNumberOfPeople +
                 '}';
     }
 }

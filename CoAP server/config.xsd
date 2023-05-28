@@ -13,7 +13,6 @@
 				<xs:element name="lowerBoundHumidity" type="xs:float"/>
 				<xs:element name="upperBoundHumidity" type="xs:float"/>
 				<xs:element name="upperBoundAirQuality" type="xs:int"/>
-				<xs:element name="maxNumberOfPeople" type="xs:int"/>
 			</xs:sequence>
 		</xs:complexType>
     </xs:element>

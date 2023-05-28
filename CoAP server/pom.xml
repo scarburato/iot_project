@@ -55,7 +55,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>it.unipi.iot.MyServer</mainClass>
+              <mainClass>it.unipi.iot.CoapManager</mainClass>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
           </archive>

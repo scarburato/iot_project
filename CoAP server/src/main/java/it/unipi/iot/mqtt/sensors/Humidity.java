@@ -1,6 +1,5 @@
 package it.unipi.iot.mqtt.sensors;
 
-import it.unipi.iot.config.ConfigurationParameters;
 import it.unipi.iot.db.DBDriver;
 import it.unipi.iot.model.HumiditySample;
 
@@ -15,7 +14,7 @@ public class Humidity {
     public static final String DEC = "DEC";
     public static final String OFF = "OFF";
 
-    private Map<Integer, HumiditySample> lastHumiditySamples;
+    private final Map<Integer, HumiditySample> lastHumiditySamples;
     private float lowerBoundHumidity;
     private float upperBoundHumidity;
     private String lastCommand;
@@ -51,7 +50,7 @@ public class Humidity {
         int howMany = lastHumiditySamples.size();
         float sum = lastHumiditySamples.values().stream()
                 .map(HumiditySample::getHumidity) // take only the humidity
-                .reduce((float) 0, Float::sum); // sum the values
+                .reduce(0.0f, Float::sum); // sum the values
         return sum / howMany;
     }
 

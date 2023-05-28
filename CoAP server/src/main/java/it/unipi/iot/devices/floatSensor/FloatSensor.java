@@ -10,7 +10,6 @@ import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapObserveRelation;
 import org.eclipse.californium.core.CoapResponse;
 
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class FloatSensor {
     private CoapClient clientPresenceSensor;
@@ -20,7 +19,7 @@ public class FloatSensor {
     private Logger logger;
     private boolean lowLevel = false;
 
-    FloatSensor(){
+    public FloatSensor(){
         floatLevelsensor = true;
         ConfigurationParameters configurationParameters = ConfigurationParameters.getInstance();
         parser = new Gson();
@@ -37,7 +36,7 @@ public class FloatSensor {
                 try {
                     FloatLevelSample floatSample = parser.fromJson(responseString, FloatLevelSample.class);
                     // TODO
-                    //DBDriver.getInstance().insertFloatLevelSample(floatSample);
+                    DBDriver.getInstance().insertFloatLevelSample(floatSample);
                     floatLevelsensor = floatSample.getLowLevel();
                 } catch(Exception e) {
                     System.out.print("\n[ERROR] The float level sensor gave non-significant data\n>");
@@ -52,7 +51,6 @@ public class FloatSensor {
                 }
 
             }
-
             @Override
             public void onError() {
                 System.err.print("\n[ERROR] Presence sensor " + clientPresenceSensor.getURI() + "]\n>");
@@ -60,4 +58,6 @@ public class FloatSensor {
         });
     }
 
+    public void unregisterFloatLevelSensor(String ip) {
+    }
 }

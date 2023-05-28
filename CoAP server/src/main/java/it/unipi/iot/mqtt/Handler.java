@@ -176,6 +176,7 @@ public class Handler implements MqttCallback {
                 if (!temperatureCollector.getLastCommand().equals(Temperature.OFF))
                 {
                     logger.logTemperature("Correct average temperature level: " + newAverage +"°C, switch off the AC");
+                    logger.logTemperature("Correct average temperature level: " + newAverage +"°C, switch off the AC");
                     publishMessage(Temperature.AC_TOPIC, Temperature.OFF);
                     temperatureCollector.setLastCommand(Temperature.OFF);
                 }

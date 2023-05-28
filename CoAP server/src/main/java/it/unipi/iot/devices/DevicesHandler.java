@@ -1,12 +1,13 @@
 package it.unipi.iot.devices;
 
 import it.unipi.iot.devices.airQuality.AirQuality;
+import it.unipi.iot.devices.floatSensor.FloatSensor;
 import it.unipi.iot.devices.light.Light;
 
 public class DevicesHandler {
     private AirQuality airQuality = new AirQuality();
     private Light light = new Light();
-
+    private FloatSensor floatSensor = new FloatSensor();
     private static DevicesHandler instance = null;
 
     private DevicesHandler() {
@@ -24,6 +25,9 @@ public class DevicesHandler {
         airQuality.registerAirQuality(ip);
     }
 
+    public void registerFloatSensor(String ip){
+        floatSensor.registerFloatLevelSensor(ip);
+    }
     public void registerLight(String ip) {
         light.registerLight(ip);
     }
@@ -35,13 +39,16 @@ public class DevicesHandler {
     public void unregisterLight(String ip) {
         light.unregisterLight(ip);
     }
-
+    public void unregisterFloat(String ip){
+        floatSensor.unregisterFloatLevelSensor(ip);
+    }
 
     /*      GET MEASURES FROM SENSORS     */
+    /* DA LEVARE: Spostato in MQTT
     public int getCO2Level() {
         return airQuality.getCO2Level();
     }
-
+    */
     /*      SET     */
     public void setLightColor(Light.LightColor lightColor) {
         light.changeLightColor(lightColor);

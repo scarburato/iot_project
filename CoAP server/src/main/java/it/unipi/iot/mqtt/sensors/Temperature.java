@@ -1,6 +1,5 @@
 package it.unipi.iot.mqtt.sensors;
 
-import it.unipi.iot.config.ConfigurationParameters;
 import it.unipi.iot.db.DBDriver;
 import it.unipi.iot.model.TemperatureSample;
 
@@ -15,7 +14,7 @@ public class Temperature {
     public static final String DEC = "DEC";
     public static final String OFF = "OFF";
 
-    private Map<Integer, TemperatureSample> lastTemperatureSamples;
+    private final Map<Integer, TemperatureSample> lastTemperatureSamples;
     private float lowerBoundTemperature;
     private float upperBoundTemperature;
     private String lastCommand;
@@ -53,7 +52,7 @@ public class Temperature {
         int howMany = lastTemperatureSamples.size();
         float sum = lastTemperatureSamples.values().stream()
                 .map(TemperatureSample::getTemperature) // take only the temperature
-                .reduce((float) 0, Float::sum); // sum the values
+                .reduce(0.0f, Float::sum); // sum the values
         return sum / howMany;
     }
 
