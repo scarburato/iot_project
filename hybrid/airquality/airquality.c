@@ -25,6 +25,8 @@
 #define LOG_LEVEL LOG_LEVEL_DBG
 #endif
 
+#define SERVER_EP "coap://[fd00::1]:5683"
+
 /* MQTT broker address. */
 #define MQTT_CLIENT_BROKER_IP_ADDR "fd00::1"
 //#define MQTT_CLIENT_BROKER_IP_ADDR "fd00::f6ce:36b3:3f0b:956"
@@ -82,6 +84,37 @@ static struct mqtt_connection conn;
 // CoaP stuff
 extern coap_resource_t res_ventilation_system;
 
+#define DO_REGISTER 1
+
+#ifdef DO_REGISTER
+#define CONNECTION_TRY_INTERVAL 1
+#define REGISTRATION_TRY_INTERVAL 1
+#define SIMULATION_INTERVAL 1
+#define SENSOR_TYPE "co2"
+
+static struct etimer wait_registration;
+
+char *service_url = "/registration";
+
+static bool registered = false;
+
+void client_chunk_handler(coap_message_t *response) {
+	const uint8_t *chunk;
+	if(response == NULL) {
+		LOG_INFO("Request timed out\n");
+		etimer_set(&wait_registration, CLOCK_SECOND* REGISTRATION_TRY_INTERVAL);
+		return;
+	}
+
+	int len = coap_get_payload(response, &chunk);
+
+	if(strncmp((char*)chunk, "Success", len) == 0)
+		registered = true;
+	else
+		etimer_set(&wait_registration, CLOCK_SECOND* REGISTRATION_TRY_INTERVAL);
+}
+#endif
+
 
 PROCESS(co2_process, "CO2 analyzer process");
 
@@ -90,7 +123,6 @@ bool ventilation_on = false;
 
 static bool update_co2()
 { // simulate the behavior of the real sensor
-    bool updated = false;
     unsigned int old_co2_level = co2_level;
     int value = 0;
 
@@ -240,7 +272,7 @@ PROCESS_THREAD(co2_process, ev, data)
                     // Prob. invio pacchetto (?)
                     COAP_BLOCKING_REQUEST(&server_ep, &request, client_chunk_handler);
 
-                    PROCESS_WAIT_UNTIL(etimer_expired(&wait_registration));
+                    //PROCESS_WAIT_UNTIL(etimer_expired(&wait_registration));
                 }
 #endif
 

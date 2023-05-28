@@ -88,6 +88,12 @@ public class CoapManager extends CoapServer {
                 exchange.respond(CoAP.ResponseCode.BAD_REQUEST, "Cancellation not allowed!".getBytes(StandardCharsets.UTF_8));
         }
     }
+
+    public static void main(String[] argv) throws SocketException {
+        CoapManager server = new CoapManager();
+        //server.add(new CoAPResourceExample("hello"));
+        server.start();
+    }
         /*
         MyServer server = new MyServer();
         server.add(new CoAPResourceExample("hello"));

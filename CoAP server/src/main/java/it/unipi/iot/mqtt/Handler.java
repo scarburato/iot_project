@@ -1,6 +1,7 @@
 package it.unipi.iot.mqtt;
 
 import com.google.gson.Gson;
+import it.unipi.iot.CoapManager;
 import it.unipi.iot.devices.DevicesHandler;
 import it.unipi.iot.log.Logger;
 import it.unipi.iot.model.AirQualitySample;
@@ -11,6 +12,7 @@ import it.unipi.iot.mqtt.sensors.Humidity;
 import it.unipi.iot.mqtt.sensors.Temperature;
 import it.unipi.iot.mqtt.sensors.WaterFloat;
 import org.eclipse.californium.core.CoapClient;
+import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.paho.client.mqttv3.*;
 
 import java.net.SocketException;
@@ -201,7 +203,7 @@ public class Handler implements MqttCallback {
         else if (topic.equals(Co2.CO2_TOPIC)) {
             AirQualitySample airQualitySample = parser.fromJson(payload, AirQualitySample.class);
             co2Collector.addSample(airQualitySample);
-            //DevicesHandler.getInstance().
+            DevicesHandler.getInstance().getAirQuality().gimmeÐat().put(airQualitySample.getCo2() >= 500 ? "ON" : "OFF", MediaTypeRegistry.TEXT_PLAIN);
         }
     }
 
@@ -220,5 +222,7 @@ public class Handler implements MqttCallback {
 
     public static void main(String[] args) throws SocketException {
         Handler mqttNetworkHandler = new Handler();
+        CoapManager server = new CoapManager();
+        server.start();
     }
 }

@@ -26,8 +26,6 @@ static void co2_put_handler(coap_message_t *request, coap_message_t *response, u
 	char mode[4];
 	memset(mode, 0, 3);
 
-	int mode_success = 1;
-
 	len = coap_get_post_variable(request, "mode", &text);
 
 	if(len <= 0 || len >= 4)

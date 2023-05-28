@@ -5,9 +5,9 @@ import it.unipi.iot.devices.floatSensor.FloatSensor;
 import it.unipi.iot.devices.light.Light;
 
 public class DevicesHandler {
-    private AirQuality airQuality = new AirQuality();
-    private Light light = new Light();
-    private FloatSensor floatSensor = new FloatSensor();
+    private final AirQuality airQuality = new AirQuality();
+    private final Light light = new Light();
+    private final FloatSensor floatSensor = new FloatSensor();
     private static DevicesHandler instance = null;
 
     private DevicesHandler() {
@@ -18,6 +18,10 @@ public class DevicesHandler {
             instance = new DevicesHandler();
 
         return instance;
+    }
+
+    public AirQuality getAirQuality() {
+        return airQuality;
     }
 
     /*      REGISTER AND UNREGISTER DEVICES     */
