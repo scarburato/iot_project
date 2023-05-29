@@ -204,6 +204,8 @@ PROCESS_THREAD(co2_process, ev, data)
 	static mqtt_status_t status;
 	static char broker_address[CONFIG_IP_ADDR_STR_LEN] = {0};
 	static button_hal_button_t *btn;
+    static coap_endpoint_t server_ep;
+	static coap_message_t request;
 
 	LOG_INFO("Avvio...");
 
@@ -236,9 +238,6 @@ PROCESS_THREAD(co2_process, ev, data)
 #ifdef DO_REGISTER
 	goto balzo;
 registra:
-	coap_endpoint_t server_ep;
-	coap_message_t request;
-
 	while(!registered) {
 		LOG_INFO("Sending CoAP registration message\n");
 		coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
@@ -336,5 +335,6 @@ fine_registra:
     }
 
 exit:
+    update_co2(); // fake call to make GCC happy
     PROCESS_END();
 }
