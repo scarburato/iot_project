@@ -29,7 +29,7 @@
 
 /* MQTT broker address. */
 #define MQTT_CLIENT_BROKER_IP_ADDR "fd00::1"
-//#define MQTT_CLIENT_BROKER_IP_ADDR "fd00::f6ce:36b3:3f0b:956"
+// #define MQTT_CLIENT_BROKER_IP_ADDR "fd00::f6ce:36b3:3f0b:956"
 
 static const char *broker_ip = MQTT_CLIENT_BROKER_IP_ADDR;
 
@@ -90,7 +90,7 @@ extern coap_resource_t res_ventilation_system;
 #define CONNECTION_TRY_INTERVAL 1
 #define REGISTRATION_TRY_INTERVAL 1
 #define SIMULATION_INTERVAL 1
-#define SENSOR_TYPE "co2"
+#define SENSOR_TYPE "{\"deviceType\": \"fan\", \"sensorId\": %u}"
 
 static struct etimer wait_registration;
 
@@ -98,23 +98,24 @@ char *service_url = "/registration";
 
 static bool registered = false;
 
-void client_chunk_handler(coap_message_t *response) {
-	const uint8_t *chunk;
-	if(response == NULL) {
-		LOG_INFO("Request timed out\n");
-		etimer_set(&wait_registration, CLOCK_SECOND* REGISTRATION_TRY_INTERVAL);
-		return;
-	}
+void client_chunk_handler(coap_message_t *response)
+{
+    const uint8_t *chunk;
+    if (response == NULL)
+    {
+        LOG_INFO("Request timed out\n");
+        etimer_set(&wait_registration, CLOCK_SECOND * REGISTRATION_TRY_INTERVAL);
+        return;
+    }
 
-	int len = coap_get_payload(response, &chunk);
+    int len = coap_get_payload(response, &chunk);
 
-	if(strncmp((char*)chunk, "Success", len) == 0)
-		registered = true;
-	else
-		etimer_set(&wait_registration, CLOCK_SECOND* REGISTRATION_TRY_INTERVAL);
+    if (strncmp((char *)chunk, "Success", len) == 0)
+        registered = true;
+    else
+        etimer_set(&wait_registration, CLOCK_SECOND * REGISTRATION_TRY_INTERVAL);
 }
 #endif
-
 
 PROCESS(co2_process, "CO2 analyzer process");
 
@@ -143,7 +144,7 @@ static bool update_co2()
         leds_set(LEDS_NUM_TO_MASK(LEDS_ORANGE));
     else
         leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
-    
+
     return old_co2_level != co2_level;
 }
 
@@ -165,8 +166,7 @@ static void mqtt_event(struct mqtt_connection *m, mqtt_event_t event, void *data
         msg_ptr = data;
         LOG_INFO(
             "Message received: topic='%s' (len=%u), chunk_len=%u\n",
-            msg_ptr->topic, (unsigned int)strlen(msg_ptr->topic), msg_ptr->payload_length
-        );
+            msg_ptr->topic, (unsigned int)strlen(msg_ptr->topic), msg_ptr->payload_length);
         break;
     case MQTT_EVENT_SUBACK:
 #if MQTT_311
@@ -193,82 +193,89 @@ static void mqtt_event(struct mqtt_connection *m, mqtt_event_t event, void *data
 
 static bool have_connectivity(void)
 {
-    //return true;
+    // return true;
     return !(uip_ds6_get_global(ADDR_PREFERRED) == NULL || uip_ds6_defrt_choose() == NULL);
 }
 
 PROCESS_THREAD(co2_process, ev, data)
 {
-	PROCESS_BEGIN();
+    PROCESS_BEGIN();
 
-	static mqtt_status_t status;
-	static char broker_address[CONFIG_IP_ADDR_STR_LEN] = {0};
-	static button_hal_button_t *btn;
+    static mqtt_status_t status;
+    static char broker_address[CONFIG_IP_ADDR_STR_LEN] = {0};
+    static button_hal_button_t *btn;
     static coap_endpoint_t server_ep;
-	static coap_message_t request;
+    static coap_message_t request;
+    static char registrationString[100] = {0};
+    static int registrationStringSize = 0;
 
-	LOG_INFO("Avvio...");
+    LOG_INFO("Avvio...");
 
-	btn = button_hal_get_by_index(0);
-	if(btn == NULL) {
-		LOG_ERR("Unable to find button 0... exit");
-		goto exit;
-	}
+    btn = button_hal_get_by_index(0);
+    if (btn == NULL)
+    {
+        LOG_ERR("Unable to find button 0... exit");
+        goto exit;
+    }
 
-	// Initialize the ClientID as MAC address
-	snprintf(client_id, BUFFER_SIZE, "%02x%02x%02x%02x%02x%02x",
-		linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
-		linkaddr_node_addr.u8[2], linkaddr_node_addr.u8[5],
-		linkaddr_node_addr.u8[6], linkaddr_node_addr.u8[7]);
+    // Initialize the ClientID as MAC address
+    snprintf(client_id, BUFFER_SIZE, "%02x%02x%02x%02x%02x%02x",
+             linkaddr_node_addr.u8[0], linkaddr_node_addr.u8[1],
+             linkaddr_node_addr.u8[2], linkaddr_node_addr.u8[5],
+             linkaddr_node_addr.u8[6], linkaddr_node_addr.u8[7]);
 
-	// Broker registration
-	mqtt_register(&conn, &co2_process, client_id, mqtt_event, MAX_TCP_SEGMENT_SIZE);
+    // Broker registration
+    mqtt_register(&conn, &co2_process, client_id, mqtt_event, MAX_TCP_SEGMENT_SIZE);
 
-	state = STATE_INIT;
+    state = STATE_INIT;
 
-	// Init seed for stuff
-	srand(time(0));
+    // Init seed for stuff
+    srand(time(0));
 
-	PROCESS_PAUSE();
+    PROCESS_PAUSE();
 
-	// Initialize periodic timer to check the status
-	etimer_set(&periodic_timer, PUBLISH_INTERVAL);
+    // Initialize periodic timer to check the status
+    etimer_set(&periodic_timer, PUBLISH_INTERVAL);
 
-	// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 #ifdef DO_REGISTER
-	goto balzo;
+    goto balzo;
 registra:
-	while(!registered) {
-		LOG_INFO("Sending CoAP registration message\n");
-		coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
+    while (!registered)
+    {
+        LOG_INFO("Sending CoAP registration message\n");
+        coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
 
-		// Prepare the message
-		coap_init_message(&request, COAP_TYPE_CON, COAP_POST, 0);
-		coap_set_header_uri_path(&request, service_url);
-		coap_set_payload(&request, (uint8_t *)SENSOR_TYPE, sizeof(SENSOR_TYPE) - 1);
+        // Prepare the message
+        coap_init_message(&request, COAP_TYPE_CON, COAP_POST, 0);
+        coap_set_header_uri_path(&request, service_url);
+        memset(registrationString, 0x00, 100);
+        registrationStringSize = snprintf(registrationString, 100, SENSOR_TYPE, node_id);
+        coap_set_payload(&request, (uint8_t *)registrationString, registrationStringSize);
 
-		// Prob. invio pacchetto (?)
-		COAP_BLOCKING_REQUEST(&server_ep, &request, client_chunk_handler);
+        // Prob. invio pacchetto (?)
+        COAP_BLOCKING_REQUEST(&server_ep, &request, client_chunk_handler);
 
-		PROCESS_WAIT_UNTIL(etimer_expired(&wait_registration));
-	}
+        PROCESS_WAIT_UNTIL(etimer_expired(&wait_registration));
+    }
 
-	LOG_INFO("CoAP DONE!!!\n");
-	goto fine_registra;
+    LOG_INFO("CoAP DONE!!!\n");
+    goto fine_registra;
 
 balzo:
 #endif
-	// AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
     while (true)
     {
         PROCESS_YIELD();
 
-	if(ev == button_hal_press_event) {
-		co2_level += 300;
-		LOG_INFO("Manually increased co2 to %dppm\n", co2_level);
-	}
-	
+        if (ev == button_hal_press_event)
+        {
+            co2_level += 300;
+            LOG_INFO("Manually increased co2 to %dppm\n", co2_level);
+        }
+
         update_co2();
 
         if ((ev == PROCESS_EVENT_TIMER && data == &periodic_timer) || ev == PROCESS_EVENT_POLL)
@@ -291,11 +298,11 @@ balzo:
                              MQTT_CLEAN_SESSION_ON);
 
                 LOG_INFO("Starting Air Quality CoAP-Server\n");
-	            coap_activate_resource(&res_ventilation_system, "air_quality/ventilation");
+                coap_activate_resource(&res_ventilation_system, "air_quality/ventilation");
 
 #ifdef DO_REGISTER
-		goto registra;
-fine_registra:
+                goto registra;
+            fine_registra:
 #endif
 
                 state = STATE_CONNECTING;
