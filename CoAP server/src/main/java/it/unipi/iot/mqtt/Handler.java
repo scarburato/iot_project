@@ -5,6 +5,7 @@ import it.unipi.iot.CoapManager;
 import it.unipi.iot.devices.DevicesHandler;
 import it.unipi.iot.log.Logger;
 import it.unipi.iot.model.AirQualitySample;
+import it.unipi.iot.model.FloatLevelSample;
 import it.unipi.iot.model.HumiditySample;
 import it.unipi.iot.model.TemperatureSample;
 import it.unipi.iot.mqtt.sensors.Co2;
@@ -205,6 +206,11 @@ public class Handler implements MqttCallback {
             //co2Collector.addSample(airQualitySample);
             DevicesHandler.getInstance().getAirQuality().gimmeÐat().put(airQualitySample.getCo2() >= 500 ? "ON" : "OFF", MediaTypeRegistry.TEXT_PLAIN);
         }
+        else if(topic.equals(WaterFloat.FLOAT_TOPIC)){
+            FloatLevelSample floatLevelSample = parser.fromJson(payload,FloatLevelSample.class);
+            DevicesHandler.getInstance().getFloatSensor().gimmeÐat().put(floatLevelSample.getLowLevel() == true ? "ON":"OFF",MediaTypeRegistry.TEXT_PLAIN);
+        }
+
     }
 
     @Override

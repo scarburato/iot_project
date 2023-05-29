@@ -58,6 +58,9 @@ public class FloatSensor {
         });
     }
 
+    public CoapClient gimmeÐat() {
+        return clientPresenceSensor;
+    }
     public void unregisterFloatLevelSensor(String ip) {
     }
 }

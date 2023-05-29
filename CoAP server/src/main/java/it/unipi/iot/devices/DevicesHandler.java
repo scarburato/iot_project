@@ -1,13 +1,16 @@
 package it.unipi.iot.devices;
 
+import it.unipi.iot.devices.AC.AirConditioner;
 import it.unipi.iot.devices.airQuality.AirQuality;
 import it.unipi.iot.devices.floatSensor.FloatSensor;
 import it.unipi.iot.devices.light.Light;
+import it.unipi.iot.mqtt.sensors.Temperature;
 
 public class DevicesHandler {
     private final AirQuality airQuality = new AirQuality();
     private final Light light = new Light();
     private final FloatSensor floatSensor = new FloatSensor();
+    private final AirConditioner airConditioner = new AirConditioner();
     private static DevicesHandler instance = null;
 
     private DevicesHandler() {
@@ -24,6 +27,10 @@ public class DevicesHandler {
         return airQuality;
     }
 
+
+    public FloatSensor getFloatSensor(){
+        return floatSensor;
+    }
     /*      REGISTER AND UNREGISTER DEVICES     */
     public void registerAirQuality(String ip) {
         airQuality.registerAirQuality(ip);
