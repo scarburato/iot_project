@@ -137,7 +137,7 @@ PROCESS_THREAD(float_process, ev, data) {
 	btn = button_hal_get_by_index(0);
 	if(btn == NULL) {
 		LOG_ERR("Unable to find button 0... exit");
-		goto exit;
+		PROCESS_EXIT();
 	}
 
 	LOG_INFO("Avvio...");
@@ -207,6 +207,5 @@ PROCESS_THREAD(float_process, ev, data) {
 		etimer_set(&periodic_timer, PUBLISH_INTERVAL);
 	}
 
-exit:
 	PROCESS_END();
 }
