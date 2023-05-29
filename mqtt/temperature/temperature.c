@@ -244,6 +244,5 @@ PROCESS_THREAD(process_for_temperature_sensor, ev, data) {
 		etimer_set(&periodic_timer, PUBLISH_INTERVAL);
 	}
 
-exit:
 	PROCESS_END();
 }
