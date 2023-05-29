@@ -185,9 +185,10 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
 	{
 		PROCESS_YIELD();
 
-		if((ev == PROCESS_EVENT_TIMER && data == &periodic_timer) || ev == PROCESS_EVENT_POLL)
-		{	
-			switch(state){
+		if(!((ev == PROCESS_EVENT_TIMER && data == &periodic_timer) || ev == PROCESS_EVENT_POLL))
+			continue;
+		
+		switch(state){
 			case STATE_INIT:
 				LOG_INFO("state init..");
 				if(have_connectivity())
@@ -261,8 +262,9 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
 			LOG_ERR("Disconnected from MQTT broker\n");	
 			state = STATE_INIT;
 			break;
-			}
-		etimer_set(&periodic_timer, PUBLISH_INTERVAL);
 		}
-		PROCESS_END();
+
+		etimer_set(&periodic_timer, PUBLISH_INTERVAL);
+	}
+	PROCESS_END();
 }
