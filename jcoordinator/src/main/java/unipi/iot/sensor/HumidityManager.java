@@ -67,17 +67,20 @@ public class HumidityManager implements TopicManager{
         sensorStats.clean();
         double avg = sensorStats.average();
         double midRange = sensorStats.midRange();
-
+        String mes;
         if(avg < (sensorStats.getLowerBoundHumidity()+(midRange-sensorStats.getLowerBoundHumidity())/2)){
             // INC
+            mes = "INC";
         }else if(avg > (sensorStats.getUpperBoundHumidity() - (sensorStats.getUpperBoundHumidity() - midRange)/2)){
             // DEC
+            mes = "DEC";
         }else{
             // OFF
+            mes = "OFF";
         }
         // TODO da modificare
         manager.getAssociatedSensor(message.getSensorId()).sendMessage(
-                message.humidity >= 50 ? "ON" : "OFF"
+                mes
         );
     }
 }

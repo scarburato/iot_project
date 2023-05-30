@@ -72,17 +72,20 @@ public class TemperatureManager implements TopicManager{
         sensorStats.clean();
         double avg = sensorStats.average();
         double midRange = sensorStats.midRange();
-
+        String mes;
         if(avg < (sensorStats.getLowerBoundTemperature()+(midRange-sensorStats.getLowerBoundTemperature())/2)){
             // INC
+            mes = "INC";
         }else if(avg > (sensorStats.getUpperBoundTemperature() - (sensorStats.getUpperBoundTemperature() - midRange)/2)){
             // DEC
+            mes = "DEC";
         }else{
             // OFF
+            mes = "OFF";
         }
 
         manager.getAssociatedSensor(message.getSensorId()).sendMessage(
-                message.temperature >= 500 ? "ON" : "OFF"
+                mes
         );
     }
 }
