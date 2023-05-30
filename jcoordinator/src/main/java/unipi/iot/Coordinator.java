@@ -90,6 +90,8 @@ public class Coordinator extends CoapServer implements MqttCallback
     private MqttClient mqttClient = null;
 
     public void connectionLost(Throwable throwable) {
+        throwable.printStackTrace();
+        System.out.println(throwable.getMessage());
         System.out.println("CONNECTION LOST");
         System.exit(-1);
     }
@@ -100,7 +102,11 @@ public class Coordinator extends CoapServer implements MqttCallback
 
         System.out.println("Incoming message from " + m.getSensorId() + " with topic " + topic);
 
-        manager.callback(m, ACTUATORS.get(TOPIC_TO_ACTUATOR.get(topic)));
+        try {
+            manager.callback(m, ACTUATORS.get(TOPIC_TO_ACTUATOR.get(topic)));
+        } catch (Throwable e) {
+            System.out.println("Failed to run callback() bc " + e.getMessage());
+        }
     }
 
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
