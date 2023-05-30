@@ -3,7 +3,6 @@ package unipi.iot.sensor;
 import com.google.gson.Gson;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import unipi.iot.actuator.ActuatorManager;
-import unipi.iot.actuator.FanManager;
 import unipi.iot.actuator.PumpManager;
 
 public class FloatLevelManager implements TopicManager{
@@ -19,7 +18,7 @@ public class FloatLevelManager implements TopicManager{
         // @TODO Inserisci nella base di dati
 
         manager.getAssociatedSensor(message.getSensorId()).sendMessage(
-               message.floatLevel == true ? "ON" : "OFF"
+               message.isLevelLow ? "ON" : "OFF"
         );
     }
 }

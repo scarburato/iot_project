@@ -9,7 +9,7 @@ public class Pump implements Actuator{
 
     public Pump(String ip) {
         this.ip = ip;
-        coapClient = new CoapClient("coap://[" + ip + "]/floatLevel/pump");
+        coapClient = new CoapClient("coap://[" + ip + "]/pump");
     }
 
     public void sendMessage(String message) {
