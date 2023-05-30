@@ -2,6 +2,7 @@ package unipi.iot.sensor;
 
 import com.google.gson.Gson;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import unipi.iot.DBDriver;
 import unipi.iot.actuator.AcManager;
 import unipi.iot.actuator.ActuatorManager;
 import unipi.iot.actuator.FanManager;
@@ -87,5 +88,6 @@ public class TemperatureManager implements TopicManager{
         manager.getAssociatedSensor(message.getSensorId()).sendMessage(
                 mes
         );
+        DBDriver.getInstance().insertTemperatureSample(message);
     }
 }

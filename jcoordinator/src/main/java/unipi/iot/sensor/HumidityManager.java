@@ -2,6 +2,7 @@ package unipi.iot.sensor;
 
 import com.google.gson.Gson;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import unipi.iot.DBDriver;
 import unipi.iot.actuator.ActuatorManager;
 import unipi.iot.actuator.HumidifierManager;
 
@@ -78,9 +79,9 @@ public class HumidityManager implements TopicManager{
             // OFF
             mes = "OFF";
         }
-        // TODO da modificare
         manager.getAssociatedSensor(message.getSensorId()).sendMessage(
                 mes
         );
+        DBDriver.getInstance().insertHumiditySample(message);
     }
 }

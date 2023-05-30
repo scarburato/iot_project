@@ -1,6 +1,9 @@
 package unipi.iot;
 
 import unipi.iot.sensor.Co2Message;
+import unipi.iot.sensor.FloatLevelMessage;
+import unipi.iot.sensor.HumidityMessage;
+import unipi.iot.sensor.TemperatureMessage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -57,4 +60,55 @@ public class DBDriver {
             System.err.println("Skipping insert....");
         }
     }
+    public void insertHumiditySample(HumidityMessage m) {
+        try (
+                Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO humidity (`sensor's id`, percentage) VALUES (?, ?)")
+        )
+        {
+            statement.setLong(1, m.node);
+            statement.setDouble(2, m.humidity);
+            statement.executeUpdate();
+        }
+        catch (final SQLException e)
+        {
+            e.printStackTrace();
+            System.err.println("Skipping insert....");
+        }
+    }
+
+    public void insertFloatLevelSample(FloatLevelMessage m) {
+        try (
+                Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO `float level`(`sensor's id`, `low level`) VALUES (?, ?)")
+        )
+        {
+            statement.setLong(1, m.node);
+            statement.setBoolean(2, m.isLevelLow);
+            statement.executeUpdate();
+        }
+        catch (final SQLException e)
+        {
+            e.printStackTrace();
+            System.err.println("Skipping insert....");
+        }
+    }
+
+    public void insertTemperatureSample(TemperatureMessage m) {
+        try (
+                Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO `air quality`(`sensor's id`, concentration) VALUES (?, ?)")
+        )
+        {
+            statement.setLong(1, m.node);
+            statement.setDouble(2, m.temperature);
+            statement.executeUpdate();
+        }
+        catch (final SQLException e)
+        {
+            e.printStackTrace();
+            System.err.println("Skipping insert....");
+        }
+    }
+
 }
