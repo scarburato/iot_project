@@ -18,7 +18,8 @@
 #define CONNECTION_TRY_INTERVAL 1
 #define REGISTRATION_TRY_INTERVAL 1
 #define SIMULATION_INTERVAL 1
-#define SENSOR_TYPE "light"
+
+#define DO_REGISTER 1
 
 /* Log configuration */
 #include "sys/log.h"
@@ -30,8 +31,13 @@
 extern coap_resource_t res_light_switch;
 extern coap_resource_t res_light_color;
 
-//char *service_url = "/registration";
+#ifdef DO_REGISTER
+char *service_url = "/registration";
 static bool registered = false;
+
+#define SENSOR_TYPE "{\"deviceType\": \"pump\", \"sensorId\": %u}"
+
+#endif
 
 static struct etimer connectivity_timer;
 static struct etimer wait_registration;
@@ -72,7 +78,7 @@ PROCESS_THREAD(light_server, ev, data){
 
 #ifdef DO_REGISTER
 	static coap_endpoint_t server_ep;
-    static coap_message_t request[1]; // This way the packet can be treated as pointer as usual
+    static coap_message_t request;
 #endif
 
 	PROCESS_PAUSE();
@@ -92,14 +98,19 @@ PROCESS_THREAD(light_server, ev, data){
 
 #ifdef DO_REGISTER
 	while(!registered) {
+		static char registrationString[100] = {0};
+    	static int registrationStringSize = 0;
+
         LOG_INFO("Sending registration message\n");
         coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
         // Prepare the message
-        coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
-        coap_set_header_uri_path(request, service_url);
-        coap_set_payload(request, (uint8_t *)SENSOR_TYPE, sizeof(SENSOR_TYPE) - 1);
+        coap_init_message(&request, COAP_TYPE_CON, COAP_POST, 0);
+        coap_set_header_uri_path(&request, service_url);
+        memset(registrationString, 0x00, 100);
+        registrationStringSize = snprintf(registrationString, 100, SENSOR_TYPE, 40);
+        coap_set_payload(&request, (uint8_t *)registrationString, registrationStringSize);
 
-        COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
+        COAP_BLOCKING_REQUEST(&server_ep, &request, client_chunk_handler);
 
         PROCESS_WAIT_UNTIL(etimer_expired(&wait_registration));
     }

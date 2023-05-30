@@ -25,17 +25,18 @@ static void pump_put_handler(coap_message_t *request, coap_message_t *response, 
 	size_t len = 0;
 	const char *text = NULL;
 		
-	len = coap_get_post_variable(request, "motor", &text);
+	//len = coap_get_post_variable(request, "motor", &text);
+	len = coap_get_payload(request, (const uint8_t**)&text);
 	if(len <= 0 || len >= 4)
 		goto error;
 	
 	if(strncmp(text, "ON", len) == 0) {
 		pump_on = true;
-		leds_set(LEDS_NUM_TO_MASK(LEDS_BLUE));
+		leds_set((leds_mask_t)LEDS_NUM_TO_MASK(LEDS_BLUE));
 		LOG_INFO("PUMP ON\n");
 	} else if(strncmp(text, "OFF", len) == 0) {
 		pump_on = false;
-		leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
+		leds_set((leds_mask_t)LEDS_NUM_TO_MASK(LEDS_RED));
 		LOG_INFO("PUMP OFF\n");
 	}
 	else

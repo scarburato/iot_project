@@ -194,9 +194,11 @@ PROCESS_THREAD(float_process, ev, data) {
 
 			LOG_INFO("float status: %s\n", float_low ? "low" : "high");
 			
-			sprintf(app_buffer, "{\"node\": %d, \"float low\": %s}", node_id, float_low ? "low" : "high");
-			mqtt_publish(&conn, NULL, pub_topic, (uint8_t *)app_buffer,
-			strlen(app_buffer), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF);
+			sprintf(app_buffer, "{\"node\": %d, \"isLevelLow\": %s}", 40, float_low ? "true" : "false");
+			mqtt_publish(
+				&conn, NULL, pub_topic, (uint8_t *)app_buffer,
+				strlen(app_buffer), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF
+			);
 
 		break; 
 		case STATE_DISCONNECTED:
