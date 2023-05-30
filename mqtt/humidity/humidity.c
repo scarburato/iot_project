@@ -252,7 +252,7 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
 
 				LOG_INFO("New value of humidity: %d%%\n", humidity_percentage);
 				
-				sprintf(app_buffer, "{\"node\": %d, \"humidity\": %d}", node_id, humidity_percentage);
+				sprintf(app_buffer, "{\"node\": %d, \"humidity\": %d}", 50, humidity_percentage);
 				mqtt_publish(&conn, NULL, pub_topic, (uint8_t *)app_buffer,
 				strlen(app_buffer), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF);
 

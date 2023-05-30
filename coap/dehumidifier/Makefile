@@ -1,4 +1,4 @@
-CONTIKI_PROJECT = dehumidifier
+CONTIKI_PROJECT=dehumidifier
 
 all: $(CONTIKI_PROJECT)
 
@@ -6,12 +6,12 @@ all: $(CONTIKI_PROJECT)
 PLATFORMS_EXCLUDE = sky z1
 
 # Include CoAP resources
-MODULES_REL += ./resources
+MODULES_REL+=./resources
 
 CONTIKI=/home/user/contiki-ng
 
 # Include the CoAP implementation
 include $(CONTIKI)/Makefile.dir-variables
-MODULES += $(CONTIKI_NG_APP_LAYER_DIR)/coap
+MODULES+=$(CONTIKI_NG_APP_LAYER_DIR)/coap
 
 include $(CONTIKI)/Makefile.include

@@ -18,20 +18,23 @@
 #define CONNECTION_TRY_INTERVAL 1
 #define REGISTRATION_TRY_INTERVAL 1
 #define SIMULATION_INTERVAL 1
-#define SENSOR_TYPE "light"
+#define SENSOR_TYPE "dehumidifier"
 
 /* Log configuration */
 #include "sys/log.h"
-#define LOG_MODULE "water_pump"
+#define LOG_MODULE "dehumidifier"
 #define LOG_LEVEL LOG_LEVEL_DBG
 
 #define INTERVAL_BETWEEN_CONNECTION_TESTS 1
 
-extern coap_resource_t res_light_switch;
-extern coap_resource_t res_light_color;
+#define DO_REGISTER 1
 
-//char *service_url = "/registration";
+extern coap_resource_t res_de;
+
+#ifdef DO_REGISTER
+static char *service_url = "/registration";
 static bool registered = false;
+#endif
 
 static struct etimer connectivity_timer;
 static struct etimer wait_registration;
@@ -80,7 +83,7 @@ PROCESS_THREAD(dehumidifier_server, ev, data){
 	leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
 
 	LOG_INFO("Starting CoAP-Dehumidifier\n");
-	coap_activate_resource(&res_dehumidifier, "dehumidifier"); 
+	coap_activate_resource(&res_de, "dehumidifier"); 
 
 	// try to connect to the border router
 	etimer_set(&connectivity_timer, CLOCK_SECOND * INTERVAL_BETWEEN_CONNECTION_TESTS);
