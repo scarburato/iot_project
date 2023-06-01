@@ -1,6 +1,7 @@
 package unipi.iot;
 
 import org.eclipse.californium.core.network.CoapEndpoint;
+import unipi.iot.sensor.Co2Manager;
 import unipi.iot.sensor.HumidityManager;
 import unipi.iot.sensor.HumidityMessage;
 
@@ -22,7 +23,7 @@ public class UserInterface {
 
 
         HumidityManager humidityManager = (HumidityManager) coordinator.getTopicManager("humidity");
-
+        Co2Manager co2Manager = (Co2Manager) coordinator.getTopicManager("co2");
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         String command;
@@ -40,24 +41,22 @@ public class UserInterface {
                         break;
                     case "!get_humidity":
                         double avg = humidityManager.getAvg();
+                        System.out.println("Average humidity: " + avg);
                         break;
                     case "!set_humidity":
                         humidityManager.lowerBoundHumidity = Integer.parseInt(parts[1]);
                         humidityManager.upperBoundHumidity = Integer.parseInt(parts[2]);
+                        System.out.println("Lower and upper bound setted. ");
                         break;
                     case "!get_air_quality":
-
+                        int co2 = co2Manager.lastCo2Registered;
+                        System.out.println("CO2 level: " + co2);
                         break;
                     case "!set_air_quality":
-
+                        co2Manager.threshold = Integer.parseInt((parts[1]));
+                        System.out.println("Threshold setted. ");
                         break;
                     case "!set_light_color":
-
-                        break;
-                    case "!set_water_level_high":
-
-                        break;
-                    case "!set_water_level_low":
 
                         break;
                     case "!exit":
@@ -86,8 +85,6 @@ public class UserInterface {
                        "!get_air_quality \n" +
                        "!set_air_quality \n" +
                        "!set_light_color <color> \n" +
-                       "!set_water_level_high \n" +
-                       "!set_water_level_low \n" +
                        "!exit \n"+
                         "");
     }
@@ -97,12 +94,6 @@ public class UserInterface {
             System.out.println("Incorrect use of the command. Please use !help <command>\n");
         } else {
             switch (parts[1]) {
-                case "set_water_level_high":
-                case "!set_water_level_high":
-                    System.out.println("!set_water_level_high set the water level to high.");
-                case "set_water_level_low":
-                case "!set_water_level_low":
-                    System.out.println("!set_water_level_high set the water level to low.");
                 case "!help":
                 case "help":
                     System.out.println("!help shows the details of the command passed as parameter.\n");
@@ -118,11 +109,11 @@ public class UserInterface {
                     break;
                 case "!get_air_quality":
                 case "get_air_quality":
-                    System.out.println("!get_air_quality allows you to retrieve the CO2 level inside the sauna, expressed in parts per million (ppm).\n");
+                    System.out.println("!get_air_quality allows you to retrieve the CO2 level inside the zoo, expressed in parts per million (ppm).\n");
                     break;
                 case "!set_air_quality":
                 case "set_air_quality":
-                    System.out.println("!set_air_quality allows you to set the maximum level of CO2 that can be inside the sauna.\n" +
+                    System.out.println("!set_air_quality allows you to set the maximum level of CO2 that can be inside the zoo.\n" +
                             "One parameter is required: the upper bound.\n");
                     break;
                 case "!set_light_color":
