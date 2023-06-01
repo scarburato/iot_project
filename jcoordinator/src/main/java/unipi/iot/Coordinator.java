@@ -67,18 +67,23 @@ public class Coordinator extends CoapServer implements MqttCallback
 
         @Override
         public void handlePOST(CoapExchange exchange) {
-            System.err.println(exchange.getRequestText());
-            RegistrationMessage m = gson.fromJson(exchange.getRequestText(), RegistrationMessage.class);
-            String ip = exchange.getSourceAddress().getHostAddress();
+            final String ip = exchange.getSourceAddress().getHostAddress();
+            try {
+                System.err.println(exchange.getRequestText());
+                RegistrationMessage m = gson.fromJson(exchange.getRequestText(), RegistrationMessage.class);
 
-            System.out.println("New actuator at " + ip + " its sensor is " + m.sensorId + " payload is " + exchange.getRequestText());
+                System.out.println("New actuator at " + ip + " its sensor is " + m.sensorId + " payload is " + exchange.getRequestText());
 
-            ACTUATORS.get(m.deviceType).registerNewActuator(m.sensorId, ip);
+                ACTUATORS.get(m.deviceType).registerNewActuator(m.sensorId, ip);
 
-            exchange.respond(CoAP.ResponseCode.CREATED, "Success".getBytes(StandardCharsets.UTF_8));
+                exchange.respond(CoAP.ResponseCode.CREATED, "Success".getBytes(StandardCharsets.UTF_8));
+            }
+            catch (Throwable e) {
+                e.printStackTrace();
+                System.out.println("Unable to register coap actuator! " + ip);
+                exchange.respond(CoAP.ResponseCode.NOT_ACCEPTABLE, "Unsuccessful".getBytes(StandardCharsets.UTF_8));
+            }
 
-            // @TODO Implement fail
-            //exchange.respond(CoAP.ResponseCode.NOT_ACCEPTABLE, "Unsuccessful".getBytes(StandardCharsets.UTF_8));
         }
 
         @Override
