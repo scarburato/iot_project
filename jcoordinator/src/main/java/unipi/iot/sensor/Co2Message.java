@@ -7,5 +7,10 @@ public class Co2Message implements TopicMessage {
         return node;
     }
 
+    @Override
+    public int getValue() {
+        return co2;
+    }
+
 
 }

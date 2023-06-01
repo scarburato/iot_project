@@ -10,11 +10,9 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.eclipse.paho.client.mqttv3.*;
 import unipi.iot.actuator.ActuatorManager;
 import unipi.iot.actuator.FanManager;
+import unipi.iot.actuator.HumidifierManager;
 import unipi.iot.actuator.PumpManager;
-import unipi.iot.sensor.Co2Manager;
-import unipi.iot.sensor.FloatLevelManager;
-import unipi.iot.sensor.TopicManager;
-import unipi.iot.sensor.TopicMessage;
+import unipi.iot.sensor.*;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -36,16 +34,19 @@ public class Coordinator extends CoapServer implements MqttCallback
     private static final Map<String, TopicManager> TOPICS = new HashMap<String, TopicManager>() {{
         put("co2", new Co2Manager());
         put("float", new FloatLevelManager());
+        put("humidity", new HumidityManager());
     }};
 
     private static final Map<String, ActuatorManager> ACTUATORS = new HashMap<String, ActuatorManager>() {{
        put("fan", new FanManager());
        put("pump", new PumpManager());
+       put("dehumidifier", new HumidifierManager());
     }};
 
     private static final Map<String, String> TOPIC_TO_ACTUATOR = new HashMap<String, String>() {{
         put("co2", "fan");
         put("float", "pump");
+        put("humidity", "dehumidifier");
     }};
 
     private static class CoapRegistrationResource extends CoapResource {
@@ -105,7 +106,7 @@ public class Coordinator extends CoapServer implements MqttCallback
         TopicManager manager = TOPICS.get(topic);
         TopicMessage m = manager.parse(mqttMessage);
 
-        System.out.println("Incoming message from " + m.getSensorId() + " with topic " + topic);
+        System.out.println("Incoming message from " + m.getSensorId() + " with topic " + topic + " value=" + m.getValue());
 
         try {
             manager.callback(m, ACTUATORS.get(TOPIC_TO_ACTUATOR.get(topic)));

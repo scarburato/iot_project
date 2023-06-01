@@ -6,4 +6,9 @@ public class FloatLevelMessage implements TopicMessage{
     public Long getSensorId() {
         return node;
     }
+
+    @Override
+    public int getValue() {
+        return isLevelLow ? 1 : 0;
+    }
 }

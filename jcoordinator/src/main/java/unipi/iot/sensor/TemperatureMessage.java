@@ -6,4 +6,9 @@ public class TemperatureMessage implements TopicMessage{
     public Long getSensorId() {
         return node;
     }
+
+    @Override
+    public int getValue() {
+        return temperature;
+    }
 }
