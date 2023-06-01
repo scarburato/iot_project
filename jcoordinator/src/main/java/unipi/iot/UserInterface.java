@@ -1,18 +1,27 @@
 package unipi.iot;
 
+import org.eclipse.californium.core.network.CoapEndpoint;
 import unipi.iot.sensor.HumidityManager;
 import unipi.iot.sensor.HumidityMessage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class UserInterface {
-    public static void main(String[] args) throws SocketException {
+    public static void main(String[] args) throws SocketException, UnknownHostException {
         Coordinator coordinator = new Coordinator();
-        HumidityManager humidityManager = (HumidityManager) coordinator.getTopicManager("humidity");
+        InetAddress addr = InetAddress.getByName("0.0.0.0");
+        InetSocketAddress bindToAddress = new InetSocketAddress(addr, 5683);
+        coordinator.addEndpoint(new CoapEndpoint(bindToAddress));
+        coordinator.start();
 
+
+        HumidityManager humidityManager = (HumidityManager) coordinator.getTopicManager("humidity");
 
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
@@ -33,7 +42,8 @@ public class UserInterface {
                         double avg = humidityManager.getAvg();
                         break;
                     case "!set_humidity":
-
+                        humidityManager.lowerBoundHumidity = Integer.parseInt(parts[1]);
+                        humidityManager.upperBoundHumidity = Integer.parseInt(parts[2]);
                         break;
                     case "!get_air_quality":
 
@@ -51,7 +61,7 @@ public class UserInterface {
 
                         break;
                     case "!exit":
-                        System.out.println("Hi!");
+                        System.out.println("bye!");
                         System.exit(0);
                         break;
                     default:
@@ -59,7 +69,7 @@ public class UserInterface {
                         break;
                 }
                 printCommandSelection();
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }

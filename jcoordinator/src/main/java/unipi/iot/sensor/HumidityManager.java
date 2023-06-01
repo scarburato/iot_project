@@ -13,11 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 public class HumidityManager implements TopicManager{
+    public int lowerBoundHumidity = 40;
+    public int upperBoundHumidity = 60;
     private static final Gson parser = new Gson();
     private static class Statistics{
         public static class Datum {public int humidity; public long timestamp;}
-        public static final int lowerBoundHumidity = 40;
-        public static final int upperBoundHumidity = 60;
+
         private final List<Datum> data = new ArrayList<>();
 
         public void add(int humidity) {
@@ -26,13 +27,6 @@ public class HumidityManager implements TopicManager{
             datum.timestamp = System.currentTimeMillis();
 
             data.add(datum);
-        }
-        public int getLowerBoundHumidity(){
-            return lowerBoundHumidity;
-        }
-
-        public int getUpperBoundHumidity(){
-            return upperBoundHumidity;
         }
         public void clean() {
             // ~ 30 secondi
@@ -45,17 +39,13 @@ public class HumidityManager implements TopicManager{
                     .map(datum -> (double)datum.humidity) // take only the humidity
                     .reduce(0.0d, Double::sum) / data.size();
         }
-
-        public double midRange(){
-            return (lowerBoundHumidity + upperBoundHumidity) / 2;
-        }
     }
 
     private final Map<Long, HumidityManager.Statistics> sensorsStats = new HashMap<>();
     public TopicMessage parse(MqttMessage message) {
         return parser.fromJson(new String(message.getPayload()), HumidityMessage.class);
     }
-    double avg;
+    private double avg = 0.0;
     public double getAvg(){
         return avg;
     }
@@ -72,12 +62,12 @@ public class HumidityManager implements TopicManager{
         sensorStats.add(message.humidity);
         sensorStats.clean();
         avg = sensorStats.average();
-        double midRange = sensorStats.midRange();
+        double midRange = (upperBoundHumidity + lowerBoundHumidity)/2.0;
         String mes;
-        if(avg < (sensorStats.getLowerBoundHumidity()+(midRange-sensorStats.getLowerBoundHumidity())/2)){
+        if(avg < (lowerBoundHumidity+(midRange-lowerBoundHumidity))/2){
             // INC
             mes = "INC";
-        }else if(avg > (sensorStats.getUpperBoundHumidity() - (sensorStats.getUpperBoundHumidity() - midRange)/2)){
+        }else if(avg > (upperBoundHumidity - (upperBoundHumidity - midRange)/2)){
             // DEC
             mes = "DEC";
         }else{
