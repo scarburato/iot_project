@@ -59,7 +59,7 @@ AUTOSTART_PROCESSES(&humidity_analyzer_process);
 
 static char client_id[BUFFER_SIZE];
 static char pub_topic[BUFFER_SIZE];
-static char sub_topic[BUFFER_SIZE];
+//static char sub_topic[BUFFER_SIZE];
 
 // Periodic timer to check the state of the MQTT client
 #define STATE_MACHINE_PERIODIC     (CLOCK_SECOND >> 1)
@@ -162,8 +162,7 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
 
 	PROCESS_BEGIN();
 
-	mqtt_status_t status;
-	char broker_address[CONFIG_IP_ADDR_STR_LEN];
+	static char broker_address[CONFIG_IP_ADDR_STR_LEN];
 	
 	LOG_INFO("Avvio...");
 	
@@ -206,15 +205,6 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
 			  	state = STATE_CONNECTING;
 			break;
 			case STATE_CONNECTED:
-			// Subscribe to a topic
-			strcpy(sub_topic,"humidifier");
-			status = mqtt_subscribe(&conn, NULL, sub_topic, MQTT_QOS_LEVEL_0);
-			if(status == MQTT_STATUS_OUT_QUEUE_FULL) {
-				LOG_ERR("Tried to subscribe but command queue was full!\n");
-				PROCESS_EXIT();
-			}
-			state = STATE_SUBSCRIBED;
-			// no break
 			case STATE_SUBSCRIBED:	
 			sprintf(pub_topic, "%s", "humidity");
 			
@@ -223,13 +213,9 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
 				{
 					variation = (rand()%10)+1; 	// a value in [1,10]
 					if (increase_humidity)
-					{
 						humidity_percentage = humidity_percentage + variation;
-					}
 					else
-					{
 						humidity_percentage = humidity_percentage - variation;
-					}
 				}
 				else // humidity regulator OFF
 				{
@@ -250,11 +236,11 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
 					humidity_percentage = MIN_HUMIDITY;
 				}
 
-				LOG_INFO("New value of humidity: %d%%\n", humidity_percentage);
-				
-				sprintf(app_buffer, "{\"node\": %d, \"humidity\": %d}", 50, humidity_percentage);
-				mqtt_publish(&conn, NULL, pub_topic, (uint8_t *)app_buffer,
-				strlen(app_buffer), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF);
+			LOG_INFO("New value of humidity: %d%%\n", humidity_percentage);
+			
+			sprintf(app_buffer, "{\"node\": %d, \"humidity\": %d}", 50, humidity_percentage);
+			mqtt_publish(&conn, NULL, pub_topic, (uint8_t *)app_buffer,
+			strlen(app_buffer), MQTT_QOS_LEVEL_0, MQTT_RETAIN_OFF);
 
 			break; 
 			
