@@ -48,6 +48,11 @@ public class Coordinator extends CoapServer implements MqttCallback
         put("float", "pump");
     }};
 
+    public TopicManager getTopicManager(String topic) {
+        return TOPICS.get(topic);
+    }
+
+
     private static class CoapRegistrationResource extends CoapResource {
         public CoapRegistrationResource() {
             super("registration");

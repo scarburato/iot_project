@@ -2,6 +2,7 @@ package unipi.iot.sensor;
 
 import com.google.gson.Gson;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import unipi.iot.Coordinator;
 import unipi.iot.DBDriver;
 import unipi.iot.actuator.ActuatorManager;
 import unipi.iot.actuator.HumidifierManager;
@@ -49,11 +50,15 @@ public class HumidityManager implements TopicManager{
             return (lowerBoundHumidity + upperBoundHumidity) / 2;
         }
     }
+
     private final Map<Long, HumidityManager.Statistics> sensorsStats = new HashMap<>();
     public TopicMessage parse(MqttMessage message) {
         return parser.fromJson(new String(message.getPayload()), HumidityMessage.class);
     }
-
+    double avg;
+    public double getAvg(){
+        return avg;
+    }
     public void callback(TopicMessage parsedMessage, ActuatorManager actManager) {
         HumidityMessage message = (HumidityMessage) parsedMessage;
         HumidifierManager manager = (HumidifierManager) actManager;
@@ -66,7 +71,7 @@ public class HumidityManager implements TopicManager{
         double oldAvg = sensorStats.average();
         sensorStats.add(message.humidity);
         sensorStats.clean();
-        double avg = sensorStats.average();
+        avg = sensorStats.average();
         double midRange = sensorStats.midRange();
         String mes;
         if(avg < (sensorStats.getLowerBoundHumidity()+(midRange-sensorStats.getLowerBoundHumidity())/2)){
