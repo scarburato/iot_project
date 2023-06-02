@@ -9,6 +9,8 @@ import unipi.iot.actuator.FanManager;
 
 public class Co2Manager implements TopicManager{
     private static final Gson parser = new Gson();
+    public int lastCo2Registered;
+    public int threshold = 500;
     public TopicMessage parse(MqttMessage message) {
         return parser.fromJson(new String(message.getPayload()), Co2Message.class);
     }
@@ -19,7 +21,7 @@ public class Co2Manager implements TopicManager{
 
         Actuator s = manager.getAssociatedSensor(message.getSensorId());
 
-        if(message.getValue() >= 500)
+        if(message.getValue() >= threshold)
             s.sendMessage("ON");
         else if(message.getValue() <= 300)
             s.sendMessage("OFF");

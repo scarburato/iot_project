@@ -2,6 +2,7 @@ package unipi.iot;
 
 import org.eclipse.californium.core.network.CoapEndpoint;
 import unipi.iot.actuator.Light;
+import unipi.iot.sensor.Co2Manager;
 import unipi.iot.actuator.LightManager;
 import unipi.iot.sensor.HumidityManager;
 import unipi.iot.sensor.HumidityMessage;
@@ -24,7 +25,7 @@ public class UserInterface {
 
 
         HumidityManager humidityManager = (HumidityManager) coordinator.getTopicManager("humidity");
-
+        Co2Manager co2Manager = (Co2Manager) coordinator.getTopicManager("co2");
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         String command;
@@ -42,16 +43,20 @@ public class UserInterface {
                         break;
                     case "!get_humidity":
                         double avg = humidityManager.getAvg();
+                        System.out.println("Average humidity: " + avg);
                         break;
                     case "!set_humidity":
                         humidityManager.lowerBoundHumidity = Integer.parseInt(parts[1]);
                         humidityManager.upperBoundHumidity = Integer.parseInt(parts[2]);
+                        System.out.println("Lower and upper bound setted. ");
                         break;
                     case "!get_air_quality":
-
+                        int co2 = co2Manager.lastCo2Registered;
+                        System.out.println("CO2 level: " + co2);
                         break;
                     case "!set_air_quality":
-
+                        co2Manager.threshold = Integer.parseInt((parts[1]));
+                        System.out.println("Threshold setted. ");
                         break;
                     case "!set_light_onoff":
                         String[] finalParts = parts;
