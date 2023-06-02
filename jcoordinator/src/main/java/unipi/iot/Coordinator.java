@@ -8,10 +8,7 @@ import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.eclipse.paho.client.mqttv3.*;
-import unipi.iot.actuator.ActuatorManager;
-import unipi.iot.actuator.FanManager;
-import unipi.iot.actuator.HumidifierManager;
-import unipi.iot.actuator.PumpManager;
+import unipi.iot.actuator.*;
 import unipi.iot.sensor.*;
 
 import java.net.InetAddress;
@@ -41,6 +38,7 @@ public class Coordinator extends CoapServer implements MqttCallback
        put("fan", new FanManager());
        put("pump", new PumpManager());
        put("dehumidifier", new HumidifierManager());
+       put("light", new LightManager());
     }};
 
     private static final Map<String, String> TOPIC_TO_ACTUATOR = new HashMap<String, String>() {{

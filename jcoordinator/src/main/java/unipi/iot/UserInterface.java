@@ -1,6 +1,8 @@
 package unipi.iot;
 
 import org.eclipse.californium.core.network.CoapEndpoint;
+import unipi.iot.actuator.Light;
+import unipi.iot.actuator.LightManager;
 import unipi.iot.sensor.HumidityManager;
 import unipi.iot.sensor.HumidityMessage;
 
@@ -51,14 +53,18 @@ public class UserInterface {
                     case "!set_air_quality":
 
                         break;
+                    case "!set_light_onoff":
+                        String[] finalParts = parts;
+                        ((LightManager)coordinator.getTopicManager("light")).lights.forEach(light -> light.setSwitch(
+                                finalParts[1].equalsIgnoreCase("on")
+                        ));
+                        break;
                     case "!set_light_color":
-
-                        break;
-                    case "!set_water_level_high":
-
-                        break;
-                    case "!set_water_level_low":
-
+                        Light.Color targetColor =
+                                parts[1].equalsIgnoreCase("red") ? Light.Color.RED :
+                                parts[1].equalsIgnoreCase("yellow") ? Light.Color.YELLOW :
+                                        Light.Color.GREEN;
+                        ((LightManager)coordinator.getTopicManager("light")).lights.forEach(light -> light.setColor(targetColor));
                         break;
                     case "!exit":
                         System.out.println("bye!");
