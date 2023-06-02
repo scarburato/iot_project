@@ -44,4 +44,8 @@ CREATE TABLE `temperature`(
 	PRIMARY KEY (`sensor's id`, `timestamp`)
 );
 
-
+CREATE TABLE `actuator` (
+    -- `id`        INT PRIMARY KEY,
+    `ip`        INET6 PRIMARY KEY,
+    `type`      VARCHAR(40) NOT NULL
+);
