@@ -130,20 +130,20 @@ static bool update_co2()
     if (ventilation_on)
     {                           // If the ventilation system is turned on, air quality improves
         value = rand() % 7 + 6; // a random number in [6;12]
-        co2_level = (int)(co2_level - 2.1 * value);
+        co2_level = (int)(co2_level - 1.8 * value);
     }
     else
     {
         value = rand() % 16;                         // a random number between 0 and 15
-        co2_level = (int)(co2_level + 0.75 * value); // In any case, the CO2 level can only increase more or less rapidly
+        co2_level = (int)(co2_level + 0.6 * value); // In any case, the CO2 level can only increase more or less rapidly
     }
 
     if (co2_level < 350)
-        leds_set(LEDS_NUM_TO_MASK(LEDS_GREEN));
+        leds_set(LEDS_GREEN);
     else if (co2_level >= 350 && co2_level < 500)
-        leds_set(LEDS_NUM_TO_MASK(LEDS_ORANGE));
+        leds_set(LEDS_BLUE);
     else
-        leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
+        leds_set(LEDS_RED);
 
     return old_co2_level != co2_level;
 }
@@ -274,6 +274,8 @@ balzo:
         {
             co2_level += 300;
             LOG_INFO("Manually increased co2 to %dppm\n", co2_level);
+            update_co2();
+            continue;
         }
 
         update_co2();
@@ -302,10 +304,11 @@ balzo:
 
 #ifdef DO_REGISTER
                 goto registra;
-            fine_registra:
+fine_registra:
 #endif
 
-                state = STATE_CONNECTING;
+                //state = STATE_CONNECTING;
+                state = STATE_SUBSCRIBED;
                 break;
             case STATE_CONNECTED:
             /*    // Subscribe to a topic
