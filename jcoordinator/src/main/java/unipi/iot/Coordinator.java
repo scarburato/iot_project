@@ -51,6 +51,9 @@ public class Coordinator extends CoapServer implements MqttCallback
         return TOPICS.get(topic);
     }
 
+    public ActuatorManager getActuatorManager(String t) {
+        return ACTUATORS.get(t);
+    }
 
     private static class CoapRegistrationResource extends CoapResource {
         public CoapRegistrationResource() {
@@ -74,6 +77,8 @@ public class Coordinator extends CoapServer implements MqttCallback
                 System.out.println("New actuator at " + ip + " its sensor is " + m.sensorId + " payload is " + exchange.getRequestText());
 
                 ACTUATORS.get(m.deviceType).registerNewActuator(m.sensorId, ip);
+
+                DBDriver.getInstance().registerActuator(ip, m.deviceType);
 
                 exchange.respond(CoAP.ResponseCode.CREATED, "Success".getBytes(StandardCharsets.UTF_8));
             }

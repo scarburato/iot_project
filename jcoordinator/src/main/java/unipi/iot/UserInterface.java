@@ -55,7 +55,7 @@ public class UserInterface {
                         break;
                     case "!set_light_onoff":
                         String[] finalParts = parts;
-                        ((LightManager)coordinator.getTopicManager("light")).lights.forEach(light -> light.setSwitch(
+                        ((LightManager)coordinator.getActuatorManager("light")).lights.forEach(light -> light.setSwitch(
                                 finalParts[1].equalsIgnoreCase("on")
                         ));
                         break;
@@ -64,7 +64,7 @@ public class UserInterface {
                                 parts[1].equalsIgnoreCase("red") ? Light.Color.RED :
                                 parts[1].equalsIgnoreCase("yellow") ? Light.Color.YELLOW :
                                         Light.Color.GREEN;
-                        ((LightManager)coordinator.getTopicManager("light")).lights.forEach(light -> light.setColor(targetColor));
+                        ((LightManager)coordinator.getActuatorManager("light")).lights.forEach(light -> light.setColor(targetColor));
                         break;
                     case "!exit":
                         System.out.println("bye!");

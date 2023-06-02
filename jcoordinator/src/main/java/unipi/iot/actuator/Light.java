@@ -33,4 +33,9 @@ public class Light implements Actuator{
     public void setSwitch(boolean state) {
         coapSwitchEndpoint.put("mode=" + (state ? "ON" : "OFF"), MediaTypeRegistry.TEXT_PLAIN);
     }
+
+    @Override
+    public String getIp() {
+        return ip;
+    }
 }

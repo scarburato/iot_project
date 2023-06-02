@@ -16,4 +16,9 @@ public class Ac implements Actuator{
         System.out.println();
         coapClient.put(message, MediaTypeRegistry.TEXT_PLAIN);
     }
+
+    @Override
+    public String getIp() {
+        return ip;
+    }
 }
