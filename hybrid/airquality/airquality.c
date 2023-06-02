@@ -64,7 +64,7 @@ AUTOSTART_PROCESSES(&co2_process);
 
 static char client_id[BUFFER_SIZE];
 static char pub_topic[BUFFER_SIZE];
-static char sub_topic[BUFFER_SIZE];
+//static char sub_topic[BUFFER_SIZE];
 
 // Periodic timer to check the state of the MQTT client
 #define STATE_MACHINE_PERIODIC (CLOCK_SECOND >> 1)
@@ -201,7 +201,7 @@ PROCESS_THREAD(co2_process, ev, data)
 {
     PROCESS_BEGIN();
 
-    static mqtt_status_t status;
+    //static mqtt_status_t status;
     static char broker_address[CONFIG_IP_ADDR_STR_LEN] = {0};
     static button_hal_button_t *btn;
     static coap_endpoint_t server_ep;
@@ -308,15 +308,15 @@ balzo:
                 state = STATE_CONNECTING;
                 break;
             case STATE_CONNECTED:
-                // Subscribe to a topic
+            /*    // Subscribe to a topic
                 strcpy(sub_topic, "co2");
                 status = mqtt_subscribe(&conn, NULL, sub_topic, MQTT_QOS_LEVEL_0);
                 if (status == MQTT_STATUS_OUT_QUEUE_FULL)
                 {
                     LOG_ERR("Tried to subscribe but command queue was full!\n");
-                    PROCESS_EXIT();
+                    //PROCESS_EXIT();
                 }
-                state = STATE_SUBSCRIBED;
+                state = STATE_SUBSCRIBED;*/
             // no break
             case STATE_SUBSCRIBED:
                 sprintf(pub_topic, "%s", "co2");

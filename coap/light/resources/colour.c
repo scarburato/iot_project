@@ -30,11 +30,11 @@ static void light_put_handler(coap_message_t *request, coap_message_t *response,
 	if(len <= 0 || len >= 7)
         goto error;
     
-    if(strncmp(text, "MEDIUM", len) == 0) {
+    if(strncmp(text, "YELLOW", len) == 0) {
         led = LEDS_YELLOW;
-    } else if(strncmp(text, "HIGH", len) == 0) {
+    } else if(strncmp(text, "GREEN", len) == 0) {
         led = LEDS_GREEN;
-    } else if(strncmp(text, "LOW", len) == 0) {
+    } else if(strncmp(text, "RED", len) == 0) {
             led = LEDS_RED;
     } else
         goto error;
