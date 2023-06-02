@@ -207,34 +207,40 @@ PROCESS_THREAD(humidity_analyzer_process, ev, data)
 			case STATE_CONNECTED:
 			case STATE_SUBSCRIBED:	
 			sprintf(pub_topic, "%s", "humidity");
+
+			if (humidity_percentage > 58+3) {
+				increase_humidity = false;
+				decrease_humidity = true;
+			} else if (humidity_percentage < 45) {
+				increase_humidity = true;
+				decrease_humidity = false;
+			}
 			
 			// simulate the behavior of the sensor				
 			if (increase_humidity || decrease_humidity)
-				{
-					variation = (rand()%10)+1; 	// a value in [1,10]
+			{
+				variation = (rand()%5)+1; 	// a value in [1,5]
+				if((rand()%10) < 8) {
 					if (increase_humidity)
 						humidity_percentage = humidity_percentage + variation;
 					else
 						humidity_percentage = humidity_percentage - variation;
 				}
-				else // humidity regulator OFF
+			}
+			else // humidity regulator OFF
+			{
+				// compute a probability to have a change
+				if ((rand()%10) < 3) // 30% chance that the humidity will change
 				{
-					// compute a probability to have a change
-					if ((rand()%10) < 6) // 60% chance that the humidity will change
-					{
-						variation = (rand()%9)-4; // a value in [-4,4];
-						humidity_percentage = humidity_percentage + variation;
-					}
-				}			
+					variation = (rand()%7)-4; // a value in
+					humidity_percentage = humidity_percentage + variation;
+				}
+			}	
 
-				if (humidity_percentage > MAX_HUMIDITY) // impossible behavior in a real environment
-				{
-					humidity_percentage = MAX_HUMIDITY; 
-				}
-				else if (humidity_percentage < MIN_HUMIDITY) // impossible behavior in a real environment
-				{
-					humidity_percentage = MIN_HUMIDITY;
-				}
+			if (humidity_percentage > MAX_HUMIDITY) // impossible behavior in a real environment
+				humidity_percentage = MAX_HUMIDITY; 
+			else if (humidity_percentage < MIN_HUMIDITY) // impossible behavior in a real environment
+				humidity_percentage = MIN_HUMIDITY;
 
 			LOG_INFO("New value of humidity: %d%%\n", humidity_percentage);
 			

@@ -36,11 +36,11 @@ static void co2_put_handler(coap_message_t *request, coap_message_t *response, u
 	memcpy(mode, text, len);
 	if(strncmp(mode, "ON", len) == 0) {
 		ventilation_on = true;
-		//leds_set(LEDS_NUM_TO_MASK(LEDS_GREEN));
+		//leds_set(LEDS_BLUE);
 		LOG_INFO("Ventilation System ON\n");
 	} else if(strncmp(mode, "OFF", len) == 0) {
 		ventilation_on = false;
-		//leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
+		//leds_set(LEDS_RED);
 		LOG_INFO("Ventilation System OFF\n");
 	} else 
 		goto exit_fail;
