@@ -80,7 +80,7 @@ PROCESS_THREAD(dehumidifier_server, ev, data){
 
 	PROCESS_PAUSE();
 
-	leds_set(LEDS_NUM_TO_MASK(LEDS_RED));
+	leds_set(LEDS_RED);
 
 	LOG_INFO("Starting CoAP-Dehumidifier\n");
 	coap_activate_resource(&res_de, "dehumidifier"); 

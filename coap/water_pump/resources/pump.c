@@ -32,11 +32,11 @@ static void pump_put_handler(coap_message_t *request, coap_message_t *response, 
 	
 	if(strncmp(text, "ON", len) == 0) {
 		pump_on = true;
-		leds_set((leds_mask_t)LEDS_NUM_TO_MASK(LEDS_BLUE));
+		leds_set(LEDS_BLUE);
 		LOG_INFO("PUMP ON\n");
 	} else if(strncmp(text, "OFF", len) == 0) {
 		pump_on = false;
-		leds_set((leds_mask_t)LEDS_NUM_TO_MASK(LEDS_RED));
+		leds_set(LEDS_RED);
 		LOG_INFO("PUMP OFF\n");
 	}
 	else

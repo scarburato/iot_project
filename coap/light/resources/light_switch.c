@@ -32,7 +32,7 @@ static void light_put_handler(coap_message_t *request, coap_message_t *response,
 	
 	if(strncmp(text, "ON", len) == 0) {
 		light_on = true;
-		leds_set(LEDS_NUM_TO_MASK(led));
+		leds_set(led);
 		LOG_INFO("Light ON\n");
 	} else if(strncmp(text, "OFF", len) == 0) {
 		light_on = false;

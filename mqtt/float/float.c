@@ -77,7 +77,7 @@ static struct mqtt_connection conn;
 
 PROCESS(float_process, "Float process");
 
-bool float_low = false;
+bool float_low = true;
 
 // This function is called each time occurs a MQTT event
 static void mqtt_event(struct mqtt_connection *m, mqtt_event_t event, void *data)
@@ -164,10 +164,12 @@ PROCESS_THREAD(float_process, ev, data) {
             btn = (button_hal_button_t *)data ;            
             printf("Press event (%s)\n", BUTTON_HAL_GET_DESCRIPTION(btn));
             float_low = !float_low;
+
+			leds_set(float_low ? LEDS_RED : LEDS_GREEN);
+			continue;
         }
 
-        leds_single_on(float_low ? LEDS_RED : LEDS_GREEN);
-        leds_single_off(!float_low ? LEDS_RED : LEDS_GREEN);
+        leds_set(float_low ? LEDS_RED : LEDS_GREEN);
 
 		if(!((ev == PROCESS_EVENT_TIMER && data == &periodic_timer) || ev == PROCESS_EVENT_POLL))
 			continue;

@@ -8,10 +8,7 @@ import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.core.network.config.NetworkConfig;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.eclipse.paho.client.mqttv3.*;
-import unipi.iot.actuator.ActuatorManager;
-import unipi.iot.actuator.FanManager;
-import unipi.iot.actuator.HumidifierManager;
-import unipi.iot.actuator.PumpManager;
+import unipi.iot.actuator.*;
 import unipi.iot.sensor.*;
 
 import java.net.InetAddress;
@@ -41,6 +38,7 @@ public class Coordinator extends CoapServer implements MqttCallback
        put("fan", new FanManager());
        put("pump", new PumpManager());
        put("dehumidifier", new HumidifierManager());
+       put("light", new LightManager());
     }};
 
     private static final Map<String, String> TOPIC_TO_ACTUATOR = new HashMap<String, String>() {{
@@ -53,6 +51,9 @@ public class Coordinator extends CoapServer implements MqttCallback
         return TOPICS.get(topic);
     }
 
+    public ActuatorManager getActuatorManager(String t) {
+        return ACTUATORS.get(t);
+    }
 
     private static class CoapRegistrationResource extends CoapResource {
         public CoapRegistrationResource() {
@@ -76,6 +77,8 @@ public class Coordinator extends CoapServer implements MqttCallback
                 System.out.println("New actuator at " + ip + " its sensor is " + m.sensorId + " payload is " + exchange.getRequestText());
 
                 ACTUATORS.get(m.deviceType).registerNewActuator(m.sensorId, ip);
+
+                DBDriver.getInstance().registerActuator(ip, m.deviceType);
 
                 exchange.respond(CoAP.ResponseCode.CREATED, "Success".getBytes(StandardCharsets.UTF_8));
             }

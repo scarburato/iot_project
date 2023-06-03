@@ -1,5 +1,6 @@
 package unipi.iot;
 
+import unipi.iot.actuator.Actuator;
 import unipi.iot.sensor.Co2Message;
 import unipi.iot.sensor.FloatLevelMessage;
 import unipi.iot.sensor.HumidityMessage;
@@ -42,6 +43,24 @@ public class DBDriver {
         return DriverManager.getConnection("jdbc:mysql://"+ databaseIp +
                         "/" + databaseName + "?zeroDateTimeBehavior=CONVERT_TO_NULL&serverTimezone=CET",
                 databaseUsername, databasePassword);
+    }
+
+    public void registerActuator(String ip, String type) {
+        try (
+                Connection connection = getConnection();
+                PreparedStatement statement = connection.prepareStatement(
+                        "REPLACE INTO `actuator`(`ip`, `type`) VALUES (?, ?)");
+        )
+        {
+            statement.setString(1, ip);
+            statement.setString(2, type);
+            statement.executeUpdate();
+        }
+        catch (final SQLException e)
+        {
+            e.printStackTrace();
+            System.err.println("Skipping insert....");
+        }
     }
 
     public void insertCO2Sample(Co2Message m) {
