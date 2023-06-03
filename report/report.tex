@@ -77,15 +77,16 @@ minimum height=3em, minimum width=6em]
 
 In recent years, the Internet of Things (IoT) has revolutionized various industries by connecting everyday objects and devices to the internet, enabling them to communicate and exchange data seamlessly. One domain that has witnessed significant transformation through the application of IoT is the realm of zoological parks and wildlife sanctuaries. By leveraging IoT technologies, zoos can create smart environments that enhance animal welfare, streamline operations, and improve visitor experiences.
 
-Our project focuses on developing a comprehensive IoT solution specifically tailored for a smart zoo, integrating a range of sensors and actuators to monitor and regulate critical environmental parameters. By utilizing the Nordic rF562840 microcontroller, we have created a network of interconnected sensors and actuators, each designed to fulfill unique monitoring or control tasks. These devices employ MQTT and CoAP protocols to facilitate efficient data transmission and actuation, ensuring seamless communication between the sensors, the central server, and the actuators.
-
-The sensors deployed in our smart zoo solution encompass float sensors, CO2 sensors, temperature sensors, and humidity sensors. These devices play a pivotal role in capturing real-time data on various environmental factors that directly impact the well-being of the zoo's inhabitants. By continuously monitoring water levels, CO2 levels, temperature, and humidity, zookeepers and administrators gain valuable insights into the animal habitats, allowing them to proactively respond to changing conditions and ensure optimal living conditions for the animals.
-
+Our project focuses on developing a comprehensive IoT solution specifically tailored for a smart zoo, integrating a range of sensors and actuators to monitor and regulate critical environmental parameters. By utilizing the \textbf{Nordic rF562840} microcontroller, we have created a network of interconnected sensors and actuators, each designed to fulfill unique monitoring or control tasks. These devices employ MQTT and CoAP protocols to facilitate efficient data transmission and actuation, ensuring seamless communication between the sensors, the central server, and the actuators.
+\paragraph{}
+The \textbf{sensors} deployed in our smart zoo solution encompass float sensors, CO2 sensors and humidity sensors. These devices play a pivotal role in capturing real-time data on various environmental factors that directly impact the well-being of the zoo's inhabitants. By continuously monitoring water levels, CO2 levels, and humidity, zookeepers and administrators gain valuable insights into the animal habitats, allowing them to proactively respond to changing conditions and ensure optimal living conditions for the animals.
+\paragraph{}
 The data collected by the sensors is consolidated and stored within a central server, serving as a robust data repository for future analysis and insights. This enables the implementation of advanced analytics and machine learning algorithms to identify patterns, detect anomalies, and predict potential issues. By harnessing the power of data-driven decision-making, zoos can preemptively address concerns and safeguard the welfare of their animals.
 
-Beyond monitoring, our IoT solution also encompasses a range of actuators designed to interact with the environment in real-time. These actuators include water pumps, fans, air conditioners (ACs), dehumidifiers, and lights. The central server analyzes the data collected by the sensors, interprets it, and triggers appropriate instructions to the actuators. This closed control loop ensures timely responses to critical conditions, such as low water levels, high CO2 concentrations, extreme temperatures, or excessive humidity. By employing such automated control mechanisms, the smart zoo can promptly rectify adverse conditions, ensuring a safe and comfortable environment for the animals.
+Beyond monitoring, our IoT solution also encompasses a range of \textbf{actuators} designed to interact with the environment in real-time. These actuators include water pumps, fans, dehumidifiers, and lights. The central server analyzes the data collected by the sensors, interprets it, and triggers appropriate instructions to the actuators. This closed control loop ensures timely responses to critical conditions, such as low water levels, high CO2 concentrations, or excessive humidity. By employing such automated control mechanisms, the smart zoo can promptly rectify adverse conditions, ensuring a safe and comfortable environment for the animals.
+\section{Transforming Zoos: Advancing Animal Welfare}
 
-The advantages of implementing IoT technology in zoos are manifold. Firstly, it significantly enhances animal welfare by creating an environment that closely mimics their natural habitats. By continuously monitoring and optimizing critical parameters like water levels, CO2 concentrations, temperature, and humidity, zoos can provide animals with a more comfortable and stress-free living environment, thereby positively impacting their physical and mental well-being.
+The advantages of implementing IoT technology in zoos are manifold. Firstly, it significantly enhances animal welfare by creating an environment that closely mimics their natural habitats. By continuously monitoring and optimizing critical parameters like water levels, CO2 concentrations, and humidity, zoos can provide animals with a more comfortable and stress-free living environment, thereby positively impacting their physical and mental well-being.
 
 %Secondly, the use of IoT in zoos optimizes resource management and operational efficiency. By automating tasks such as water refilling, air circulation, temperature control, humidity regulation, and lighting, significant reductions in labor and energy costs can be achieved. The centralized control and monitoring capabilities of IoT solutions streamline zoo operations, allowing staff members to focus on higher-value activities such as animal care, education, and conservation efforts.
 
@@ -100,7 +101,6 @@ We have the following sensors:
 \begin{itemize}
 	\item \textbf{float} sensors, used to monitor the water level
 	\item \textbf{co2} sensors, used to monitor the co2 level
-	\item \textbf{temperature}, used to monitor the environment's temperature
 	\item \textbf{humidity}, used to monitor the environment's humidity
 \end{itemize}
 
@@ -109,9 +109,8 @@ and the following actuators:
 \begin{itemize}
 	\item \textbf{water pumps}, to refill the tanks
 	\item \textbf{fans}, to recirculate air
-	\item \textbf{ACs}, to increase or decrease the environment's temperature
 	\item \textbf{dehumidifiers}, to control humidity
-	\item \textbf{lights}
+	\item \textbf{lights}, to set the brightness level of the zoo's cage
 \end{itemize}
 
 \paragraph{Control loop}
@@ -158,6 +157,12 @@ It's implemented in \textit{Java} using Eclipse's libraries to interface it to M
 
 \section{Data encoding}
 
+In the context of our sensor network, where resources are limited, we have made a strategic decision to employ JSON as the preferred data encoding format. All the data generated by the sensors is transmitted to the collector in the form of JSON objects. This choice was motivated by several factors, primarily centered around the constrained nature of the sensor devices themselves.
+\paragraph{}
+One significant advantage of using JSON is its flexibility and simplicity compared to alternative formats like XML. XML tends to have a more complex structure, making it less suitable for our specific needs. By opting for JSON, we are able to streamline the data representation process, reducing unnecessary complexity and overhead.
+
+\paragraph{}
+Furthermore, JSON's text-based nature aligns well with the resource limitations of our sensor devices. While other binary encodings, such as CBOR, may offer superior efficiency in terms of data size, the availability and maturity of suitable libraries on our Contiki platform are still limited. As a result, adopting a text-based format like JSON becomes a pragmatic choice, ensuring compatibility and ease of implementation within our specific environment.
 \chapter{Analytics}
 
 \section{Database}
@@ -174,5 +179,113 @@ Our project incorporates a real-time monitoring and visualization aspect through
 By leveraging Grafana, we have created a user-friendly interface that presents the data in a visually appealing and intuitive manner. The dashboard provides real-time updates, allowing zookeepers, administrators, and other stakeholders to stay informed about the current status of the monitored parameters at a glance. The ability to view data trends in real-time empowers decision-makers to respond promptly to any deviations or potential issues, ensuring swift and appropriate action is taken.
 
 Furthermore, Grafana enables the visualization of historical data, providing a comprehensive view of the parameter trends over time. This capability is invaluable for performing in-depth analysis and identifying long-term patterns and correlations. By visualizing historical trends, zoo staff can gain insights into seasonal variations, identify potential stressors or triggers for animal behavior, and make informed decisions regarding habitat management and animal care protocols.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{"assets/grafana iot"}
+	\caption{}
+	\label{fig:grafana-iot}
+\end{figure}
+
+
+\chapter{Implementation's Details}
+\section{Collector}
+
+\includepdf[landscape=true,pagecommand=\thispagestyle{plain}]{assets/uml.pdf}
+
+\subsection{CLI}
+The following are the functions that are accessible to the user through the Command Line Interface:
+\begin{itemize}
+	\item \textbf{!help <command>}: shows the details of a specific command. 
+	\item \textbf{!get\_humidity}: get the humidity level of zoo's cage. If there are multiple humidity sensors, the
+	global humidity level is calculated by averaging.
+	\item \textbf{!set\_humidity <lowerBound> <upperBound>}: sets the range within which the humidity must stay.
+	\item \textbf{!get\_air\_quality}: get the air quality level of the zoo's cage. The last measure is provided.
+	\item \textbf{!set\_air\_quality <upperBound>}: sets the limit below which the C02 concentration must stay.
+	\item \textbf{!set\_light\_color <color>}: sets the light color (GREEN, YELLOW or RED). As already mentioned, by
+	changing the color of the lights it is possible to apply different levels of brightness in the zoo's cage.
+	\item \textbf{!exit}: terminates the program
+\end{itemize}
+\section{IoT Nodes}
+
+	
+	
+	The code represents a modular and adaptable system for managing different types of sensors in an Internet of Things (IoT) environment. Let's break down the code and explain its functionality:
+	
+	\subsection{The \texttt{TopicManager} Interface}
+	
+	The \texttt{TopicManager} interface defines the contract for a topic manager, which is responsible for parsing MQTT messages and executing callbacks. It includes two methods:
+	
+	\begin{itemize}
+		\item \texttt{parse}: Takes an \texttt{MqttMessage} object and converts it into a \texttt{TopicMessage} object. The specific implementation of \texttt{TopicMessage} depends on the type of sensor.
+		\item \texttt{callback}: Executes a callback function based on the parsed message. The callback function receives the parsed message and an \texttt{ActuatorManager} object.
+	\end{itemize}
+	
+	\subsection{The \texttt{TopicMessage} Interface}
+	
+	The \texttt{TopicMessage} interface defines the contract for a topic message, which represents the data received from a sensor. It includes two methods:
+	
+	\begin{itemize}
+		\item \texttt{getSensorId}: Returns the ID of the sensor that generated the message.
+		\item \texttt{getValue}: Returns the value associated with the sensor reading.
+	\end{itemize}
+	
+	\subsection{The \texttt{Co2Manager} Class}
+	
+	The \texttt{Co2Manager} class implements the \texttt{TopicManager} interface and provides specific functionality for managing CO2 sensors. It includes a \texttt{parse} method that converts an MQTT message into a \texttt{Co2Message} object, which implements the \texttt{TopicMessage} interface.
+	
+	The \texttt{callback} method is responsible for executing actions based on the parsed CO2 message. It retrieves the CO2 value from the message and checks if it exceeds a threshold value. If the CO2 value exceeds the threshold, it sends an "ON" message to a corresponding fan actuator using an \texttt{ActuatorManager}. Otherwise, it sends an "OFF" message.
+	
+	Additionally, the CO2 sample is inserted into a database using a \texttt{DBDriver} class.
+	
+	\subsection{The \texttt{Co2Message} Class}
+	
+	The \texttt{Co2Message} class represents a specific type of message for CO2 sensors. It implements the \texttt{TopicMessage} interface and provides implementations for the \texttt{getSensorId} and \texttt{getValue} methods. The \texttt{Co2Message} object contains the sensor ID (\texttt{node}) and the CO2 reading (\texttt{co2}).
+	
+	The code is modular and adaptable because it uses interfaces (\texttt{TopicManager} and \texttt{TopicMessage}) to define contracts for managing different types of sensors. This allows for the creation of specific implementations for various sensor types by implementing the \texttt{TopicManager} interface and creating corresponding message classes that implement the \texttt{TopicMessage} interface. In this example, the code focuses on CO2 sensors (\texttt{Co2Manager} and \texttt{Co2Message}), but we created similar implementations for other types of sensors by providing their own parsing logic and callback actions. This modular design allows for scalability and flexibility in handling different types of sensors within an IoT system.
+	
+	
+
+		
+
+		
+		This code represents a system for managing actuators in an Internet of Things (IoT) environment. Let's break down the code and explain its functionality:
+		
+		\subsection{The \texttt{Actuator} Interface}
+		
+		The \texttt{Actuator} interface defines the contract for an actuator, which is responsible for sending messages. It includes a single method:
+		
+		\begin{itemize}
+			\item \texttt{sendMessage}: Sends a message using the actuator.
+		\end{itemize}
+		
+		\subsection{The \texttt{ActuatorManager} Interface}
+		
+		The \texttt{ActuatorManager} interface defines the contract for an actuator manager, which is responsible for managing actuators associated with sensors. It includes three methods:
+		
+		\begin{itemize}
+			\item \texttt{getAssociatedSensor}: Returns the actuator associated with a given sensor ID.
+			\item \texttt{registerNewActuator}: Registers a new actuator and associates it with a sensor ID.
+			\item \texttt{deleteActuator}: Deletes an actuator associated with a sensor ID.
+		\end{itemize}
+		
+		\subsection{The \texttt{Fan} Class}
+		
+		The \texttt{Fan} class implements the \texttt{Actuator} interface and represents a specific type of actuator for a fan. It includes a constructor that takes an IP address as a parameter and initializes a CoAP client for communication.
+		
+		The \texttt{sendMessage} method sends a message to the fan by using the CoAP client to perform a PUT request with the provided message and the media type set to \texttt{TEXT\_PLAIN}.
+		
+		\subsection{The \texttt{FanManager} Class}
+		
+		The \texttt{FanManager} class implements the \texttt{ActuatorManager} interface and provides functionality for managing fan actuators. It includes a \texttt{sensorsToActuators} map that associates sensor IDs with fan actuators.
+		
+		The \texttt{getAssociatedSensor} method returns the actuator associated with the given sensor ID from the \texttt{sensorsToActuators} map.
+		
+		The \texttt{registerNewActuator} method creates a new \texttt{Fan} object with the provided IP address and associates it with the given sensor ID in the \texttt{sensorsToActuators} map.
+		
+		The \texttt{deleteActuator} method removes the actuator associated with the given sensor ID from the \texttt{sensorsToActuators} map.
+		
+		The code provides a modular and adaptable system for managing actuators. The \texttt{Actuator} and \texttt{ActuatorManager} interfaces define the contracts, allowing for the implementation of various types of actuators and their management. In this example, the code focuses on fan actuators (\texttt{Fan} and \texttt{FanManager}), but we created similar implementations for other types of actuators by implementing the \texttt{Actuator} interface and extending the \texttt{ActuatorManager} interface. This modular design allows for flexibility in handling different types of actuators within an IoT system.
+
 
 \end{document}          
