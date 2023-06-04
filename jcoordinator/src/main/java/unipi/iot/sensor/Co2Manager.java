@@ -19,11 +19,13 @@ public class Co2Manager implements TopicManager{
         Co2Message message = (Co2Message) parsedMessage;
         FanManager manager = (FanManager) actManager;
 
+        lastCo2Registered = message.co2;
+
         Actuator s = manager.getAssociatedSensor(message.getSensorId());
 
         if(message.getValue() >= threshold)
             s.sendMessage("ON");
-        else if(message.getValue() <= 300)
+        else if(message.getValue() <= threshold-200)
             s.sendMessage("OFF");
 
         DBDriver.getInstance().insertCO2Sample(message);

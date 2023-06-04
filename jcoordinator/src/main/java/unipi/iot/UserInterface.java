@@ -91,16 +91,14 @@ public class UserInterface {
        System.out.println(
                        "<><><><><><><> SMART ZOO CONTROLLER <><><><><><><>" +
                        "Choose the command:" +
-                       "!help <command>    - Shows the details of a command \n " +
+                       "!help <command>    - Shows the details of a command \n" +
                        "!get_humidity \n" +
-                       "!set_humidity \n" +
+                       "!set_humidity [lower bound] [upper bound]\n" +
                        "!get_air_quality \n" +
-                       "!set_air_quality \n" +
+                       "!set_air_quality [threshold]\n" +
                        "!set_light_color <color> \n" +
-                       "!set_water_level_high \n" +
-                       "!set_water_level_low \n" +
-                       "!exit \n"+
-                        "");
+                       "!set_light_onoff [ON|OFF] \n" +
+                       "!exit \n");
     }
 
     private static void printHelp(String[] parts) {
