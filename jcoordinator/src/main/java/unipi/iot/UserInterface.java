@@ -122,21 +122,21 @@ public class UserInterface {
                     break;
                 case "!set_humidity":
                 case "set_humidity":
-                    System.out.println("!set_humidity allows you to set the range within which the humidity level should be found inside the sauna.\n" +
+                    System.out.println("!set_humidity allows you to set the range within which the humidity level should be found inside the cage.\n" +
                             "Two parameters are required: the lower and the upper bounds.\n");
                     break;
                 case "!get_air_quality":
                 case "get_air_quality":
-                    System.out.println("!get_air_quality allows you to retrieve the CO2 level inside the sauna, expressed in parts per million (ppm).\n");
+                    System.out.println("!get_air_quality allows you to retrieve the CO2 level inside the cage, expressed in parts per million (ppm).\n");
                     break;
                 case "!set_air_quality":
                 case "set_air_quality":
-                    System.out.println("!set_air_quality allows you to set the maximum level of CO2 that can be inside the sauna.\n" +
+                    System.out.println("!set_air_quality allows you to set the maximum level of CO2 that can be inside the cage.\n" +
                             "One parameter is required: the upper bound.\n");
                     break;
                 case "!set_light_color":
                 case "set_light_color":
-                    System.out.println("!set_color allows you to set the color of the light inside the sauna.\n" +
+                    System.out.println("!set_color allows you to set the color of the light inside the cage.\n" +
                             "A parameter is required, i.e. the color, which can take three values: GREEN, YELLOW or RED. \n");
                     break;
                 case "!exit":
