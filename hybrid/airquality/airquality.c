@@ -159,8 +159,8 @@ static void mqtt_event(struct mqtt_connection *m, mqtt_event_t event, void *data
         break;
     case MQTT_EVENT_DISCONNECTED:
         printf("MQTT connection disconnected. Reason: %u\n", *((mqtt_event_t *)data));
-        state = STATE_DISCONNECTED;
-        process_poll(&co2_process);
+        state = STATE_NET_OK;
+        //process_poll(&co2_process);
         break;
     case MQTT_EVENT_PUBLISH:
         msg_ptr = data;
@@ -337,7 +337,7 @@ fine_registra:
 
             case STATE_DISCONNECTED:
                 LOG_ERR("Disconnected from MQTT broker\n");
-                state = STATE_INIT;
+                state = STATE_NET_OK;
                 break;
             }
             etimer_set(&periodic_timer, PUBLISH_INTERVAL);
